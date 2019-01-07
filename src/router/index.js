@@ -4,8 +4,7 @@ import Router from 'vue-router';
 Vue.use(Router);
 
 export default new Router({
-    routes: [
-        {
+    routes: [{
             path: '/',
             redirect: '/dashboard'
         },
@@ -13,8 +12,7 @@ export default new Router({
             path: '/',
             component: resolve => require(['../components/common/Home.vue'], resolve),
             meta: { title: '自述文件' },
-            children:[
-                {
+            children: [{
                     path: '/dashboard',
                     component: resolve => require(['../components/page/Dashboard.vue'], resolve),
                     meta: { title: '系统首页' }
@@ -49,13 +47,13 @@ export default new Router({
                     // markdown组件
                     path: '/markdown',
                     component: resolve => require(['../components/page/Markdown.vue'], resolve),
-                    meta: { title: 'markdown编辑器' }    
+                    meta: { title: 'markdown编辑器' }
                 },
                 {
                     // 图片上传组件
                     path: '/upload',
                     component: resolve => require(['../components/page/Upload.vue'], resolve),
-                    meta: { title: '文件上传' }   
+                    meta: { title: '文件上传' }
                 },
                 {
                     // vue-schart组件
@@ -84,6 +82,11 @@ export default new Router({
                     path: '/403',
                     component: resolve => require(['../components/page/403.vue'], resolve),
                     meta: { title: '403' }
+                },
+                {
+                    path: '/downorder',
+                    component: resolve => require(['../components/managepage/downorder.vue'], resolve),
+                    meta: { title: '订单下单' }
                 }
             ]
         },
