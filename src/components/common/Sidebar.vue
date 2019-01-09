@@ -44,14 +44,18 @@
                         title: '系统首页'
                     },
                     {
-                        icon: 'el-icon-lx-calendar',
+                        icon: 'el-icon-lx-cascades',
                         index: '3',
-                        title: '订单管理',
+                        title: '行程管理',
                         subs: [
                             {
                                 index: 'downorder',
-                                title: '订单下单'
-                            }
+                                title: '填写行程'
+                            },
+                            {
+                                index: 'downorder',
+                                title: '行程管理'
+                            },
                             
                         ]
                     }

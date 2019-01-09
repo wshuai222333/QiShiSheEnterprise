@@ -6,11 +6,11 @@
                     <div class="user-info">
                         <img src="static/img/公司名称.svg" class="user-avator" alt="">
                         <div class="user-info-cont">
-                            <div class="user-info-name">{{name}}</div>
-                            <div>{{role}}</div>
+                            <div class="user-info-name">{{李欢}}</div>
+                            <div>北京全友有限公司</div>
                         </div>
                     </div>
-                    <div class="user-info-list">积分：<span>123123</span></div>
+                    <div class="user-info-list">积分：<span>666</span></div>
                 </el-card>
                
             </el-col>
@@ -21,19 +21,19 @@
                             <div class="grid-content grid-con-1">
                                 <i class="el-icon-lx-people grid-con-icon"></i>
                                 <div class="grid-cont-right">
-                                    <div class="grid-num">1234</div>
-                                    <div>用户访问量</div>
+                                    <div class="grid-num">99</div>
+                                    <div>员工数</div>
                                 </div>
                             </div>
                         </el-card>
                     </el-col>
-                    <el-col :span="8">
+            <el-col :span="8">
                         <el-card shadow="hover" :body-style="{padding: '0px'}">
                             <div class="grid-content grid-con-2">
                                 <i class="el-icon-lx-notice grid-con-icon"></i>
                                 <div class="grid-cont-right">
-                                    <div class="grid-num">321</div>
-                                    <div>系统消息</div>
+                                    <div class="grid-num">2</div>
+                                    <div>待出行数</div>
                                 </div>
                             </div>
                         </el-card>
@@ -43,8 +43,8 @@
                             <div class="grid-content grid-con-3">
                                 <i class="el-icon-tickets grid-con-icon"></i>
                                 <div class="grid-cont-right">
-                                    <div class="grid-num">5000</div>
-                                    <div>数量</div>
+                                    <div class="grid-num">19345</div>
+                                    <div>节省费用</div>
                                 </div>
                             </div>
                         </el-card>
@@ -52,12 +52,12 @@
                 </el-row>
                 <el-card shadow="hover" style="height:403px;">
                     <div slot="header" class="clearfix">
-                        <span>待办事项</span>
+                        <span>行程提醒</span>
                     </div>
                     <el-table :data="todoList" :show-header="false" height="304" style="width: 100%;font-size:14px;">
                         <el-table-column width="40">
                             <template slot-scope="scope">
-                                <el-checkbox v-model="scope.row.status"></el-checkbox>
+                                <!-- <el-checkbox v-model="scope.row.status"></el-checkbox> -->
                             </template>
                         </el-table-column>
                         <el-table-column>
@@ -67,8 +67,7 @@
                         </el-table-column>
                         <el-table-column width="60">
                             <template slot-scope="scope">
-                                <i class="el-icon-edit"></i>
-                                <i class="el-icon-delete"></i>
+                               <i class="el-icon-delete"></i>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -98,27 +97,27 @@
         data() {
             return {
                 name: localStorage.getItem('ms_username'),
-                todoList: [{
-                        title: '今天要修复100个bug',
+                    todoList: [{
+                        title: '机票：2019-01-23 9:00 北京-上海 T3航站楼',
                         status: false,
                     },
                     {
-                        title: '今天要修复100个bug',
+                        title: '机票：2019-01-23 9:00 北京-上海 T3航站楼',
                         status: false,
                     },
                     {
-                        title: '今天要写100行代码加几个bug吧',
+                         title: '机票：2019-01-23 9:00 北京-上海 T3航站楼',
                         status: false,
                     }, {
-                        title: '今天要修复100个bug',
+                         title: '机票：2019-01-23 9:00 北京-上海 T3航站楼',
                         status: false,
                     },
                     {
-                        title: '今天要修复100个bug',
+                        title: '机票：2019-01-23 9:00 北京-上海 T3航站楼',
                         status: true,
                     },
                     {
-                        title: '今天要写100行代码加几个bug吧',
+                        title: '机票：2019-01-23 9:00 北京-上海 T3航站楼',
                         status: true,
                     }
                 ],

@@ -8,99 +8,105 @@
         </div>
         <div class="container">
             <div class="form-box">
-                <el-form ref="form" :model="form" label-width="80px">
+                <el-form ref="form" :model="form" label-width="100px">
                 <el-form-item >
                     <el-steps :active="0">
-                    <el-step title="步骤 1" description="这是一段很长很长很长的描述性文字"></el-step>
-                    <el-step title="步骤 2" description="这是一段很长很长很长的描述性文字"></el-step>
-                     <el-step title="步骤 3" description="这段就没那么长了"></el-step>
+                    <el-step title="填单" description="填写行程需求单"></el-step>
+                    <el-step title="确认" description="确认具体行程"></el-step>
+                    <el-step title="出行" description="行程制定成功"></el-step>
                     </el-steps>
                 </el-form-item>
-                <el-form-item label="日期时间">
+                <el-form-item >
+                        <el-radio-group v-model="form.traveltype">
+                            <el-radio-button label="0" @click.native="onTravelTypeClick(0)">单程</el-radio-button>
+                            <el-radio-button label="1" @click.native="onTravelTypeClick(1)">往返</el-radio-button>
+                        </el-radio-group>
+                </el-form-item>
+                <el-form-item label="航程日期">
                         <el-col :span="11">
-                            <el-date-picker type="date" placeholder="选择日期" v-model="form.date1" style="width: 100%;"></el-date-picker>
+                            <el-date-picker type="date" placeholder="出发日期" v-model="form.date1" style="width: 100%;"></el-date-picker>
                         </el-col>
                         <el-col class="line" :span="2">-</el-col>
                          <el-col :span="11">
-                            <el-date-picker type="date" placeholder="选择日期" v-model="form.date1" style="width: 100%;"></el-date-picker>
+                            <el-date-picker :disabled="form.returndate" type="date" placeholder="返回日期" v-model="form.date1" style="width: 100%;"></el-date-picker>
                         </el-col>
                 </el-form-item>
-                <el-form-item label="城市选择">
+                <el-form-item label="航程城市">
                         <el-col :span="11">
-                             <el-cascader :options="options" v-model="form.options" style="width: 100%;"></el-cascader>
+                             <el-cascader :options="options" v-model="form.options" style="width: 100%;" placeholder="出发城市"></el-cascader>
                         </el-col>
                         <el-col class="line" :span="2"><i class="el-icon-arrow-right" ></i></el-col>
                          <el-col :span="11">
-                             <el-cascader :options="options" v-model="form.options" style="width: 100%;"></el-cascader>
+                             <el-cascader :options="options" v-model="form.options" style="width: 100%;" placeholder="到达城市"></el-cascader>
                         </el-col>
                 </el-form-item> 
-                <el-form-item label="表单名称">
-                        <el-input v-model="form.name"></el-input>
+                <el-form-item label="目的地">
+                        <el-input v-model="form.name" placeholder="具体商圈/街区(选填)"></el-input>
                 </el-form-item>
-             
+                 
+                <el-form-item label="出行人" >
+                     <el-row>
+                     <el-col :span="6" >
+                     <el-cascader :options="options" v-model="form.options" placeholder="选择员工"></el-cascader>
+                     </el-col>
+                     <el-col :span="6" :offset="1">
+                     <el-button type="primary" icon="el-icon-plus" size="small" round>添加出行人</el-button>
+                     </el-col>
+                     </el-row>
+                </el-form-item>
                  <el-form-item>
                  <p style="border-bottom:solid 1px #ccc;"></p>
                 </el-form-item>
              
-                <el-form-item label="单选框">
-                        <el-radio-group v-model="form.resource">
-                            <el-radio label="步步高"></el-radio>
-                            <el-radio label="小天才"></el-radio>
+                <el-form-item label="期望交通方式">
+                        <el-radio-group v-model="form.travelway">
+                            <el-radio-button label="0">飞机</el-radio-button>
+                            <el-radio-button label="1">火车</el-radio-button>
                        </el-radio-group>
                 </el-form-item>
-                <el-form-item label="多选框">
-                        <el-checkbox-group v-model="form.type">
-                            <el-checkbox label="步步高" name="type"></el-checkbox>
-                            <el-checkbox label="小天才" name="type"></el-checkbox>
-                            <el-checkbox label="imoo" name="type"></el-checkbox>
-                        </el-checkbox-group>
-                
+                <el-form-item label="期望出行时间">
+                         <el-cascader :options="options" v-model="form.options"  placeholder="06:00-9:00"></el-cascader>
                 </el-form-item>
-                <el-form-item label="表单名称">
-                        <el-input v-model="form.name"></el-input>
+                <el-form-item label="其他要求">
+                        <el-input v-model="form.name"  placeholder="头等舱/公务舱/指定航班(选填)"></el-input>
                 </el-form-item>
 
                 <el-form-item>
                  <p style="border-bottom:solid 1px #ccc;"></p>
                 </el-form-item>
 
-                <el-form-item label="单选框">
-                        <el-radio-group v-model="form.resource">
-                            <el-radio label="步步高"></el-radio>
-                            <el-radio label="小天才"></el-radio>
-                            <el-radio label="imoo"></el-radio>
+                <el-form-item label="期望酒店位置">
+                        <el-radio-group v-model="form.hotellocation">
+                            <el-radio-button label="1">目的地</el-radio-button>
+                            <el-radio-button label="2">机场/车站</el-radio-button>
+                            <el-radio-button label="0">无需预定</el-radio-button>
                         </el-radio-group>
                 </el-form-item>
-                 <el-form-item label="表单名称">
-                        <el-input v-model="form.name"></el-input>
+                 <el-form-item label="其他要求">
+                        <el-input v-model="form.name"  placeholder="其他位置/具体房间要求(选填)"></el-input>
                 </el-form-item>
                  <el-form-item>
                  <p style="border-bottom:solid 1px #ccc;"></p>
                 </el-form-item>
-                <el-form-item label="城市级联" >
+                <el-form-item label="房间信息" >
                      <el-row>
-                     <el-col :span="6" >
-                      <el-cascader :options="options" v-model="form.options"></el-cascader>
-                     </el-col>
-                      <el-col :span="6" :offset="1">
-                      <el-cascader :options="options" v-model="form.options"></el-cascader>
-                     </el-col>
+                      <el-col :span="6">
+                      <el-cascader :options="options" v-model="form.options" placeholder="选择房型"></el-cascader>
+                      </el-col>
                       <el-col :span="2" :offset="1">
-                      
-                      <el-input v-model="form.name"></el-input> 
-                    
-                     </el-col>
+                      <el-input :v-model="1">1</el-input> 
+                      </el-col>
                      <el-col :span="2">
                       间             
                      </el-col>
-                      <el-col :span="6">
-                     <el-button type="primary" icon="el-icon-plus" size="small">添加同行人</el-button>
+                       <el-col :span="6" :offset="1">
+                     <el-button type="primary" icon="el-icon-plus" size="small" round>添加房型</el-button>
                      </el-col>
                      </el-row>
               </el-form-item>
 
                 <el-form-item>
-                        <el-button type="primary" @click="onSubmit">表单提交</el-button>
+                        <el-button type="primary" @click="onSubmit">提交</el-button>
                 </el-form-item>
                 </el-form>
             </div>
@@ -173,15 +179,26 @@
                     date2: '',
                     delivery: true,
                     type: ['步步高'],
-                    resource: '小天才',
+                    travelway: "0",
+                    traveltype:"1",
+                    hotellocation:"1",
                     desc: '',
-                    options: []
+                    options: [],
+                    returndate:false
                 }
             }
         },
         methods: {
             onSubmit() {
                 this.$message.success('提交成功！');
+            },
+            onTravelTypeClick(type){
+                debugger;
+              if (type==1) {
+                  this.form.returndate = false;
+              }else{
+                 this.form.returndate = true;
+              }
             }
         }
     }
