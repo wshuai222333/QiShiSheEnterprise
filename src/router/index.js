@@ -86,7 +86,17 @@ export default new Router({
                 {
                     path: '/downorder',
                     component: resolve => require(['../components/managepage/downorder.vue'], resolve),
-                    meta: { title: '订单下单' }
+                    meta: { title: '行程填写' }
+                },
+                {
+                    path: '/orderlist',
+                    component: resolve => require(['../components/managepage/orderlist.vue'], resolve),
+                    meta: { title: '行程列表' }
+                },
+                {
+                    path: '/confirmorder',
+                    component: resolve => require(['../components/managepage/confirmorder.vue'], resolve),
+                    meta: { title: '确认订单' }
                 }
             ]
         },

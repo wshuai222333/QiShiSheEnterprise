@@ -44,7 +44,7 @@
                         title: '系统首页'
                     },
                     {
-                        icon: 'el-icon-lx-cascades',
+                        icon: 'el-icon-lx-global',
                         index: '3',
                         title: '行程管理',
                         subs: [
@@ -53,9 +53,17 @@
                                 title: '填写行程'
                             },
                             {
-                                index: 'downorder',
-                                title: '行程管理'
+                                index: 'orderlist',
+                                title: '行程列表'
                             },
+                            {
+                                index: '403',
+                                title: '结果页'
+                            },
+                             {
+                                index: 'confirmorder',
+                                title: '确认订单'
+                            }
                             
                         ]
                     }
