@@ -1,58 +1,61 @@
 <template>
-    <div class="table">
-        <div class="crumbs">
-            <el-breadcrumb separator="/">
-                <el-breadcrumb-item>
-                    <i class="el-icon-lx-cascades"></i> 基础表格
-                </el-breadcrumb-item>
-            </el-breadcrumb>
-        </div>
-        <div class="container">
-            <el-table :data="tableData3" style="width: 100%">
-                <el-table-column prop="date" label="日期" width="150"></el-table-column>
-                <el-table-column label="配送信息">
-                    <el-table-column prop="name" label="姓名" width="120"></el-table-column>
-                    <el-table-column label="地址">
-                        <el-table-column prop="province" label="省份" width="120"></el-table-column>
-                        <el-table-column prop="city" label="市区" width="120"></el-table-column>
-                        <el-table-column prop="address" label="地址" width="300"></el-table-column>
-                        <el-table-column prop="zip" label="邮编" width="120"></el-table-column>
-                    </el-table-column>
-                </el-table-column>
-            </el-table>
-            
-            <el-table :data="tableData3" style="width: 100%">
-                <el-table-column prop="date" label="日期" width="150"></el-table-column>
-                <el-table-column label="配送信息">
-                    <el-table-column prop="name" label="姓名" width="120"></el-table-column>
-                    <el-table-column label="地址">
-                        <el-table-column prop="province" label="省份" width="120"></el-table-column>
-                        <el-table-column prop="city" label="市区" width="120"></el-table-column>
-                        <el-table-column prop="address" label="地址" width="300"></el-table-column>
-                        <el-table-column prop="zip" label="邮编" width="120"></el-table-column>
-                    </el-table-column>
-                </el-table-column>
-            </el-table>
-        </div>
-        <div class="container">
-            <el-table :data="tableData3" style="width: 100%">
-                <el-table-column prop="date" label="日期" width="150"></el-table-column>
-                <el-table-column label="配送信息">
-                    <el-table-column prop="name" label="姓名" width="120"></el-table-column>
-                    <el-table-column label="地址">
-                        <el-table-column prop="province" label="省份" width="120"></el-table-column>
-                        <el-table-column prop="city" label="市区" width="120"></el-table-column>
-                        <el-table-column prop="address" label="地址" width="300"></el-table-column>
-                        <el-table-column prop="zip" label="邮编" width="120"></el-table-column>
-                    </el-table-column>
-                </el-table-column>
-            </el-table>
-        </div>
+  <div class="table">
+    <div class="crumbs">
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item>
+          <i class="el-icon-lx-cascades"></i> 基础表格
+        </el-breadcrumb-item>
+      </el-breadcrumb>
     </div>
+    <div class="container">
+      <el-steps :active="1" style="width:65%">
+        <el-step title="填单" description="填写行程需求单"></el-step>
+        <el-step title="确认" description="确认具体行程"></el-step>
+        <el-step title="出行" description="行程制定成功"></el-step>
+      </el-steps>
+      
+      <p style="height:10px;"></p>
+
+      <el-table :data="tableData3" style="width: 59%">
+        <el-table-column label="行程信息">
+          <el-table-column prop="province" label="出发时间" width="120"></el-table-column>
+          <el-table-column prop="city" label="出发城市" width="120"></el-table-column>
+          <el-table-column prop="address" label="到达时间" width="120"></el-table-column>
+          <el-table-column prop="zip" label="到达城市" width="120"></el-table-column>
+          <el-table-column prop="zip" label="航班号" width="120"></el-table-column>
+          <el-table-column prop="zip" label="仓位" width="120"></el-table-column>
+        </el-table-column>
+      </el-table>
+
+      <el-table :data="tableData3" style="width: 59%">
+        <el-table-column label="酒店信息" >
+          <el-table-column prop="province" label="酒店名称" width="120"></el-table-column>
+          <el-table-column prop="zip" label="酒店地址" width="120"></el-table-column>
+          <el-table-column prop="city" label="入住时间" width="120"></el-table-column>
+          <el-table-column prop="address" label="离店时间" width="120"></el-table-column>
+          <el-table-column prop="zip" label="房型" width="120"></el-table-column>
+          <el-table-column prop="zip" label="间数" width="120"></el-table-column>
+        </el-table-column>
+      </el-table>
+
+       <el-table :data="tableData3" style="width: 59%">
+        <el-table-column label="出行人信息">
+          <el-table-column prop="province" label="出行人姓名" width="240"></el-table-column>
+          <el-table-column prop="zip" label="出行人身份证号" width="240"></el-table-column>
+          <el-table-column prop="city" label="出行人电话" width="240"></el-table-column>
+        </el-table-column>
+      </el-table>
+       <p style="height:10px;"></p>
+      <el-row>
+        <el-button type="primary" @click="onSubmit">确认行程</el-button>
+      </el-row>
+    </div>
+  </div>
 </template>
 
 <script>
 export default {
+<<<<<<< HEAD
     data() {
         return {
             tableData3: [
@@ -67,6 +70,22 @@ export default {
             ]
         };
     }
+=======
+  data() {
+    return {
+      tableData3: [
+        {
+          date: "2016-05-03",
+          name: "王小虎",
+          province: "上海",
+          city: "普陀区",
+          address: "上海市普陀区金沙江路 1518 弄",
+          zip: 200333
+        }
+      ]
+    };
+  }
+>>>>>>> a3991abd76c22a94efeb5e16507225ae8512bf30
 };
 </script>
 <style scoped>
