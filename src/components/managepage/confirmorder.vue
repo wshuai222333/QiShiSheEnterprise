@@ -55,22 +55,6 @@
 
 <script>
 export default {
-<<<<<<< HEAD
-    data() {
-        return {
-            tableData3: [
-                {
-                    date: "2016-05-03",
-                    name: "王小虎",
-                    province: "上海",
-                    city: "普陀区",
-                    address: "上海市普陀区金沙江路 1518 弄",
-                    zip: 200333
-                }
-            ]
-        };
-    }
-=======
   data() {
     return {
       tableData3: [
@@ -85,7 +69,6 @@ export default {
       ]
     };
   }
->>>>>>> a3991abd76c22a94efeb5e16507225ae8512bf30
 };
 </script>
 <style scoped>
