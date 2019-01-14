@@ -6,11 +6,11 @@
                     <div class="user-info">
                         <img src="static/img/公司名称.svg" class="user-avator" alt="">
                         <div class="user-info-cont">
-                            <div class="user-info-name">{{李欢}}</div>
-                            <div>北京全友有限公司</div>
+                            <div class="user-info-name">{{staffname}}</div>
+                            <div>{{enterprisename}}</div>
                         </div>
                     </div>
-                    <div class="user-info-list">积分：<span>666</span></div>
+                    <div class="user-info-list">积分：<span>{{integral}}</span></div>
                 </el-card>
                
             </el-col>
@@ -96,7 +96,9 @@
         name: 'dashboard',
         data() {
             return {
-                name: localStorage.getItem('ms_username'),
+                staffname: JSON.parse(localStorage.getItem('ms_username')).StaffName,
+                enterprisename:JSON.parse(localStorage.getItem('ms_username')).EnterpriseName,
+                integral:JSON.parse(localStorage.getItem('ms_username')).Integral,
                     todoList: [{
                         title: '机票：2019-01-23 9:00 北京-上海 T3航站楼',
                         status: false,

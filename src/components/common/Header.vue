@@ -23,7 +23,7 @@
                     <span class="btn-bell-badge" v-if="message"></span>
                 </div>
                 <!-- 用户头像 -->
-                <div class="user-avator"><img src="static/img/img.jpg"></div>
+                <!-- <div class="user-avator"><img src="static/img/img.jpg"></div> -->
                 <!-- 用户名下拉菜单 -->
                 <el-dropdown class="user-name" trigger="click" @command="handleCommand">
                     <span class="el-dropdown-link">
@@ -42,19 +42,21 @@
 </template>
 <script>
     import bus from '../common/bus';
+    import Service from "../../_common";
+
     export default {
         data() {
             return {
                 collapse: false,
                 fullscreen: false,
-                name: 'linxin',
+                name: '未知',
                 message: 0
             }
         },
         computed:{
             username(){
-                let username = localStorage.getItem('ms_username');
-                return username ? username : this.name;
+                let user = JSON.parse(localStorage.getItem("ms_username"));
+                return user.UserName ? user.UserName : this.name;
             }
         },
         methods:{

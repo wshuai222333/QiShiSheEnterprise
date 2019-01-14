@@ -85,17 +85,13 @@
               <el-cascader :options="options" v-model="form.options" placeholder="06:00-9:00"></el-cascader>
             </el-form-item>
             <el-form-item label="其他要求">
-              <el-input v-model="form.name" placeholder="头等舱/公务舱/指定航班(选填)"></el-input>
+              <el-input v-model="form.travelothers" placeholder="头等舱/公务舱/指定航班(选填)"></el-input>
             </el-form-item>
           </div>
 
           <div v-show="hotelshow">
             <el-form-item label="目的地">
               <el-input v-model="form.name" placeholder="具体商圈/街区(选填)"></el-input>
-            </el-form-item>
-
-            <el-form-item>
-              <p style="border-bottom:solid 1px #ccc;"></p>
             </el-form-item>
 
             <el-form-item>
@@ -110,7 +106,7 @@
               </el-radio-group>
             </el-form-item>
             <el-form-item label="其他要求">
-              <el-input v-model="form.name" placeholder="其他位置/具体房间要求(选填)"></el-input>
+              <el-input v-model="form.hotelothers" placeholder="其他位置/具体房间要求(选填)"></el-input>
             </el-form-item>
             <el-form-item>
               <p style="border-bottom:solid 1px #ccc;"></p>
@@ -208,15 +204,31 @@ export default {
       ],
       form: {
         bookingtype: "2",
+        traveltype: "1",
+        departtime:"",
+        arrivetime:"",
+        departcity:"",
+        arrivecity:"",
+        travelway: "0",
+        expecttraveltime:"",
+        travelothers:"",
+
+        destination:"",
+        hotellocation: "1",
+        hotelothers:"",
+
+        hotelinfo:[],
+
+        traveluser:[],
+
         name: "",
         region: "",
         date1: "",
         date2: "",
         delivery: true,
         type: ["步步高"],
-        travelway: "0",
-        traveltype: "1",
-        hotellocation: "1",
+        
+       
         desc: "",
         options: [],
         returndate: false
