@@ -82,22 +82,29 @@
               </el-radio-group>
             </el-form-item>
             <el-form-item label="期望出行时间">
-              <el-cascader :options="options" v-model="form.options" placeholder="06:00-9:00"></el-cascader>
+              <el-select v-model="form.expecttraveltime" placeholder="期望时间段">
+                <el-option
+                  v-for="item in expecttraveltime"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
             </el-form-item>
             <el-form-item label="其他要求">
               <el-input v-model="form.travelothers" placeholder="头等舱/公务舱/指定航班(选填)"></el-input>
-            </el-form-item>
-          </div>
-
-          <div v-show="hotelshow">
-            <el-form-item label="目的地">
-              <el-input v-model="form.name" placeholder="具体商圈/街区(选填)"></el-input>
             </el-form-item>
 
             <el-form-item>
               <p style="border-bottom:solid 1px #ccc;"></p>
             </el-form-item>
+            <p style="height:4px;"></p>
+          </div>
 
+          <div v-show="hotelshow">
+            <el-form-item label="目的地">
+              <el-input v-model="form.destination" placeholder="具体商圈/街区(选填)"></el-input>
+            </el-form-item>
             <el-form-item label="期望酒店位置">
               <el-radio-group v-model="form.hotellocation">
                 <el-radio-button label="1">目的地</el-radio-button>
@@ -109,33 +116,77 @@
               <el-input v-model="form.hotelothers" placeholder="其他位置/具体房间要求(选填)"></el-input>
             </el-form-item>
             <el-form-item>
-              <p style="border-bottom:solid 1px #ccc;"></p>
+              <el-button type="primary" icon="el-icon-plus" size="small" round>添加房型</el-button>
             </el-form-item>
             <el-form-item label="房间信息">
               <el-row>
                 <el-col :span="6">
-                  <el-cascader :options="options" v-model="form.options" placeholder="选择房型"></el-cascader>
+                  <el-select v-model="form.hotelinfo[0].hoteloption" placeholder="选择房型">
+                    <el-option
+                      v-for="item in hoteloptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    ></el-option>
+                  </el-select>
                 </el-col>
                 <el-col :span="2" :offset="1">
-                  <el-input :v-model="1">1</el-input>
+                  <el-input v-model="form.hotelinfo[0].roomcount"></el-input>
                 </el-col>
                 <el-col :span="2">间</el-col>
-                <el-col :span="6" :offset="1">
-                  <el-button type="primary" icon="el-icon-plus" size="small" round>添加房型</el-button>
-                </el-col>
               </el-row>
             </el-form-item>
+            <el-form-item>
+              <p style="border-bottom:solid 1px #ccc;"></p>
+            </el-form-item>
           </div>
-          <el-form-item label="出行人">
+          <!-- <el-form-item label="出行人">
             <el-row>
               <el-col :span="6">
-                <el-cascader :options="options" v-model="form.options" placeholder="选择员工"></el-cascader>
+                <el-select v-model="form.traveluser[0].staffname" placeholder="选择出行人">
+                  <el-option
+                    v-for="item in staffoptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
               </el-col>
               <el-col :span="6" :offset="1">
                 <el-button type="primary" icon="el-icon-plus" size="small" round>添加出行人</el-button>
               </el-col>
             </el-row>
+          </el-form-item>-->
+          <el-form-item>
+            <el-button
+              type="primary"
+              icon="el-icon-plus"
+              size="small"
+              round
+              @click="addDomain"
+            >添加出行人</el-button>
           </el-form-item>
+          <el-form-item
+            v-for="(domain, index) in dynamicValidateForm.domains"
+            :label="'域名' + index"
+            :key="domain.key"
+            :prop="'domains.' + index + '.value'"
+            :rules="{
+      required: true, message: '出行人不能为空', trigger: 'blur'
+    }"
+          >
+            <el-select v-model="domain.value" placeholder="选择出行人">
+              <el-option
+                v-for="item in staffoptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+
+            <el-button @click.prevent="removeDomain(domain)">删除</el-button>
+          </el-form-item>
+
           <el-form-item>
             <el-button type="primary" @click="onSubmit">提交</el-button>
           </el-form-item>
@@ -202,24 +253,52 @@ export default {
           ]
         }
       ],
+      expecttraveltime: [
+        { value: "0", label: "06:00-08:00" },
+        { value: "1", label: "08:00-10:00" },
+        { value: "3", label: "10:00-12:00" },
+        { value: "4", label: "12:00-14:00" },
+        { value: "5", label: "14:00-16:00" },
+        { value: "6", label: "16:00-18:00" },
+        { value: "7", label: "18:00-20:00" },
+        { value: "8", label: "20:00-22:00" },
+        { value: "9", label: "22:00-00:00" }
+      ],
+      hoteloptions: [
+        { value: "0", label: "双人标间" },
+        { value: "1", label: "商务大床" },
+        { value: "2", label: "豪华套间" }
+      ],
+      staffoptions: [
+        { value: "王帅", label: "王帅" },
+        { value: "李欢", label: "李欢" },
+        { value: "张翰", label: "张翰" }
+      ],
+      dynamicValidateForm: {
+        domains: [
+          {
+            value: ""
+          }
+        ]
+      },
       form: {
         bookingtype: "2",
         traveltype: "1",
-        departtime:"",
-        arrivetime:"",
-        departcity:"",
-        arrivecity:"",
+        departtime: "",
+        arrivetime: "",
+        departcity: "",
+        arrivecity: "",
         travelway: "0",
-        expecttraveltime:"",
-        travelothers:"",
+        expecttraveltime: "0",
+        travelothers: "",
 
-        destination:"",
+        destination: "",
         hotellocation: "1",
-        hotelothers:"",
+        hotelothers: "",
 
-        hotelinfo:[],
+        hotelinfo: [{ hoteloption: "0", roomcount: 1 }],
 
-        traveluser:[],
+        traveluser: [{ staffname: "" }],
 
         name: "",
         region: "",
@@ -227,8 +306,7 @@ export default {
         date2: "",
         delivery: true,
         type: ["步步高"],
-        
-       
+
         desc: "",
         options: [],
         returndate: false
@@ -258,6 +336,18 @@ export default {
       } else {
         this.airshow = true;
         this.hotelshow = true;
+      }
+    },
+    addDomain() {
+      this.dynamicValidateForm.domains.push({
+        value: "",
+        key: Date.now()
+      });
+    },
+    removeDomain(item) {
+      var index = this.dynamicValidateForm.domains.indexOf(item);
+      if (index !== -1) {
+        this.dynamicValidateForm.domains.splice(index, 1);
       }
     }
   }
