@@ -16,50 +16,52 @@
 
       <p style="height:10px;"></p>
       <!--行程信息-->
-      <el-row>
-        <el-col :offset="13" :span="4">
-          <el-button type="text" @click="clickopendialog">更改航班</el-button>
-        </el-col>
-      </el-row>
+      <el-card class="box-card" style="width:60%" :body-style="{ padding: '0px' }">
+        <div slot="header" class="clearfix">
+          <span>行程信息</span>
+          <el-button style="float: right; padding: 3px 0" type="text" @click="clickopendialog">更改航班</el-button>
+        </div>
+        <el-table :data="tableData3" style="width:100%" show-summary :summary-method="getSummaries">
+          <el-table-column prop="province" label="出发时间"></el-table-column>
+          <el-table-column prop="city" label="出发城市"></el-table-column>
+          <el-table-column prop="address" label="到达时间"></el-table-column>
+          <el-table-column prop="zip" label="到达城市"></el-table-column>
+          <el-table-column prop="zip" label="航班号"></el-table-column>
+          <el-table-column prop="zip" label="座位类型"></el-table-column>
+          <el-table-column prop="zip" label="票号"></el-table-column>
+        </el-table>
+      </el-card>
 
       <p style="height:5px;"></p>
-      <el-table :data="tableData3" style="width:60%" show-summary :summary-method="getSummaries">
-        <el-table-column label="行程信息">
-          <el-table-column prop="province" label="出发时间" style="width:10%"></el-table-column>
-          <el-table-column prop="city" label="出发城市" style="width:10%">></el-table-column>
-          <el-table-column prop="address" label="到达时间" style="width:10%">></el-table-column>
-          <el-table-column prop="zip" label="到达城市" style="width:10%"></el-table-column>
-          <el-table-column prop="zip" label="航班号" style="width:10%"></el-table-column>
-          <el-table-column prop="zip" label="仓位" style="width:10%"></el-table-column>
-        </el-table-column>
-      </el-table>
-      <p style="height:5px;"></p>
+
       <!--酒店信息-->
-      <el-row>
-        <el-col :offset="13" :span="4">
-          <el-button type="text">更改酒店</el-button>
-        </el-col>
-      </el-row>
-      <p style="height:5px;"></p>
-      <el-table :data="tableData3" style="width:60%">
-        <el-table-column label="酒店信息">
+      <el-card class="box-card" style="width:60%" :body-style="{ padding: '0px' }" >
+        <div slot="header" class="clearfix">
+          <span>酒店信息</span>
+          <el-button style="float: right; padding: 3px 0" type="text" @click="clickopendialog">更改酒店</el-button>
+        </div>
+        <el-table :data="tableData3" style="width:100%" show-summary :summary-method="getSummaries">
           <el-table-column prop="province" label="酒店名称" style="width:10%"></el-table-column>
           <el-table-column prop="zip" label="酒店地址" style="width:10%"></el-table-column>
           <el-table-column prop="city" label="入住时间" style="width:10%"></el-table-column>
           <el-table-column prop="address" label="离店时间" style="width:10%"></el-table-column>
           <el-table-column prop="zip" label="房型" style="width:10%"></el-table-column>
           <el-table-column prop="zip" label="间数" style="width:10%"></el-table-column>
-        </el-table-column>
-      </el-table>
-      <p style="height:5px;"></p>
+        </el-table>
+      </el-card>
+
       <!--出行人信息-->
-      <el-table :data="tableData3" style="width:60%">
-        <el-table-column label="出行人信息">
+      <p style="height:5px;"></p>
+      <el-card class="box-card" style="width:60%" :body-style="{ padding: '0px' }">
+        <div slot="header" class="clearfix">
+          <span>出行人信息</span>
+        </div>
+        <el-table :data="tableData3" style="width:100%">
           <el-table-column prop="province" label="出行人姓名" style="width:20%"></el-table-column>
           <el-table-column prop="zip" label="出行人身份证号" style="width:20%"></el-table-column>
           <el-table-column prop="city" label="出行人电话" style="width:20%"></el-table-column>
-        </el-table-column>
-      </el-table>
+        </el-table>
+      </el-card>
       <p style="height:10px;"></p>
       <el-row>
         <el-button type="primary" @click="onSubmit">确认行程</el-button>

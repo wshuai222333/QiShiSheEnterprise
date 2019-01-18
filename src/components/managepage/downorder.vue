@@ -14,6 +14,7 @@
         <el-step title="确认" description="确认具体行程"></el-step>
         <el-step title="出行" description="行程制定成功"></el-step>
       </el-steps>
+      <!--form表单-->
       <div class="form-box">
         <el-form ref="form" :model="form" label-width="100px">
           <el-form-item>
@@ -21,12 +22,12 @@
           </el-form-item>
           <el-form-item label="预定类型">
             <el-radio-group v-model="form.bookingtype">
-              <el-radio-button label="0" @click.native="onBookingTypeClick(0)">机票</el-radio-button>
+              <el-radio-button label="0" @click.native="onBookingTypeClick(0)">机票/火车票</el-radio-button>
               <el-radio-button label="1" @click.native="onBookingTypeClick(1)">酒店</el-radio-button>
-              <el-radio-button label="2" @click.native="onBookingTypeClick(2)">机票&&酒店</el-radio-button>
+              <el-radio-button label="2" @click.native="onBookingTypeClick(2)">机票/火车票&&酒店</el-radio-button>
             </el-radio-group>
           </el-form-item>
-
+          <!--行程信息-->
           <div v-show="airshow">
             <el-form-item label="行程类型">
               <el-radio-group v-model="form.traveltype">
@@ -35,24 +36,57 @@
               </el-radio-group>
             </el-form-item>
             <el-form-item label="行程日期">
-              <el-col :span="11">
-                <el-date-picker
-                  type="date"
-                  placeholder="出发日期"
-                  v-model="form.date1"
-                  style="width: 100%;"
-                ></el-date-picker>
-              </el-col>
-              <el-col class="line" :span="2">-</el-col>
-              <el-col :span="11">
-                <el-date-picker
-                  :disabled="form.returndate"
-                  type="date"
-                  placeholder="返回日期"
-                  v-model="form.date1"
-                  style="width: 100%;"
-                ></el-date-picker>
-              </el-col>
+              <el-row>
+                <el-col :span="11">
+                  <el-date-picker
+                    type="date"
+                    placeholder="出发日期"
+                    v-model="form.departdate"
+                    style="width: 100%;"
+                  ></el-date-picker>
+                </el-col>
+                <el-col class="line" :span="2">
+                  <i class="el-icon-minus"></i>
+                </el-col>
+                <el-col :span="11">
+                  <el-select v-model="form.expectdeparttime" placeholder="期望时间段">
+                    <el-option
+                      v-for="item in expecttraveltime"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    ></el-option>
+                  </el-select>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="11">
+                  <el-date-picker
+                    :disabled="form.returndate"
+                    type="date"
+                    placeholder="返回日期"
+                    v-model="form.arrivedate"
+                    style="width: 100%;"
+                  ></el-date-picker>
+                </el-col>
+                <el-col class="line" :span="2">
+                  <i class="el-icon-minus"></i>
+                </el-col>
+                <el-col :span="11">
+                  <el-select
+                    v-model="form.expecttraveltime"
+                    :disabled="form.returndate"
+                    placeholder="期望时间段"
+                  >
+                    <el-option
+                      v-for="item in expecttraveltime"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    ></el-option>
+                  </el-select>
+                </el-col>
+              </el-row>
             </el-form-item>
             <el-form-item label="行程城市">
               <el-col :span="11">
@@ -102,18 +136,44 @@
           </div>
 
           <div v-show="hotelshow">
-            <el-form-item label="目的地">
-              <el-input v-model="form.destination" placeholder="具体商圈/街区(选填)"></el-input>
+            <el-form-item label="酒店入住日期">
+              <el-col :span="11">
+                <el-date-picker
+                  type="date"
+                  placeholder="入住日期"
+                  v-model="form.date1"
+                  style="width: 100%;"
+                ></el-date-picker>
+              </el-col>
+              <el-col class="line" :span="2">-</el-col>
+              <el-col :span="11">
+                <el-date-picker
+                  :disabled="form.returndate"
+                  type="date"
+                  placeholder="离店日期"
+                  v-model="form.date1"
+                  style="width: 100%;"
+                ></el-date-picker>
+              </el-col>
+            </el-form-item>
+            <el-form-item label="酒店类型">
+              <el-radio-group v-model="form.hoteltype">
+                <el-radio-button label="0">现结</el-radio-button>
+                <el-radio-button label="1">预付</el-radio-button>
+              </el-radio-group>
             </el-form-item>
             <el-form-item label="期望酒店位置">
               <el-radio-group v-model="form.hotellocation">
                 <el-radio-button label="1">目的地</el-radio-button>
                 <el-radio-button label="2">机场/车站</el-radio-button>
-                <el-radio-button label="0">无需预定</el-radio-button>
+                <el-radio-button label="0">无要求</el-radio-button>
               </el-radio-group>
             </el-form-item>
+            <el-form-item label="目的地">
+              <el-input v-model="form.destination" placeholder="具体商圈/街区(选填)"></el-input>
+            </el-form-item>
             <el-form-item label="其他要求">
-              <el-input v-model="form.hotelothers" placeholder="其他位置/具体房间要求(选填)"></el-input>
+              <el-input v-model="form.hotelothers" placeholder="其他位置/具体房间要求/指定酒店(选填)"></el-input>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" icon="el-icon-plus" size="small" round>添加房型</el-button>
@@ -168,7 +228,7 @@
           </el-form-item>
           <el-form-item
             v-for="(domain, index) in dynamicValidateForm.domains"
-            :label="'域名' + index"
+            :label="'出行人' + (index+1)"
             :key="domain.key"
             :prop="'domains.' + index + '.value'"
             :rules="{
@@ -267,7 +327,8 @@ export default {
       hoteloptions: [
         { value: "0", label: "双人标间" },
         { value: "1", label: "商务大床" },
-        { value: "2", label: "豪华套间" }
+        { value: "2", label: "豪华大床" },
+        { value: "3", label: "豪华套件" }
       ],
       staffoptions: [
         { value: "王帅", label: "王帅" },
@@ -284,14 +345,16 @@ export default {
       form: {
         bookingtype: "2",
         traveltype: "1",
-        departtime: "",
-        arrivetime: "",
+        departdate: "",
+        arrivedate: "",
         departcity: "",
         arrivecity: "",
         travelway: "0",
-        expecttraveltime: "0",
+        expectdeparttime: "",
+        expectarrivetime: "",
         travelothers: "",
 
+        hoteltype: "0",
         destination: "",
         hotellocation: "1",
         hotelothers: "",
