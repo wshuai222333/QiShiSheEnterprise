@@ -16,7 +16,7 @@
 
       <p style="height:10px;"></p>
       <!--行程信息-->
-      <el-card class="box-card" style="width:60%">
+      <el-card class="box-card" style="width:65%">
         <div slot="header" class="clearfix">
           <span>行程信息</span>
           <el-button style="float: right; padding: 3px 0" type="text" @click="clickopendialog">更改航班</el-button>
@@ -36,30 +36,43 @@
           <el-table-column prop="city" label="到达地点"></el-table-column>
           <el-table-column prop="zip" label="航班号"></el-table-column>
           <el-table-column prop="zip" label="座位类型"></el-table-column>
+          <el-table-column label="">
+            <template slot-scope="scope">
+              <el-popover
+                placement="top-start"
+                title="退改签规定"
+                width="200"
+                trigger="hover"
+                content="起飞前2小时扣除80%票价;起飞前2小时后扣除100%票价"
+              >
+                <el-button slot="reference">退改签</el-button>
+              </el-popover>
+            </template>
+          </el-table-column>
         </el-table>
       </el-card>
 
       <p style="height:5px;"></p>
 
       <!--酒店信息-->
-      <el-card class="box-card" style="width:60%">
+      <el-card class="box-card" style="width:65%">
         <div slot="header" class="clearfix">
           <span>酒店信息</span>
           <el-button style="float: right; padding: 3px 0" type="text" @click="clickopenhdialog">更改酒店</el-button>
         </div>
-        <el-table :data="tableData3" style="width:100%" show-summary :summary-method="getSummaries">
-          <el-table-column prop="province" label="酒店名称"></el-table-column>
-          <el-table-column prop="zip" label="酒店地址"></el-table-column>
-          <el-table-column prop="city" label="入住时间"></el-table-column>
-          <el-table-column prop="address" label="离店时间"></el-table-column>
-          <el-table-column prop="zip" label="房型"></el-table-column>
-          <el-table-column prop="zip" label="间数"></el-table-column>
+        <el-table :data="tableData2" style="width:100%" show-summary :summary-method="getSummaries">
+          <el-table-column prop="city" label="酒店名称"></el-table-column>
+          <el-table-column prop="address" label="酒店地址"></el-table-column>
+          <el-table-column prop="date" label="入住时间"></el-table-column>
+          <el-table-column prop="date1" label="离店时间"></el-table-column>
+          <el-table-column prop="fightno" label="房型"></el-table-column>
+          <el-table-column prop="count" label="间数"></el-table-column>
         </el-table>
       </el-card>
 
       <!--出行人信息-->
       <p style="height:5px;"></p>
-      <el-card class="box-card" style="width:60%">
+      <el-card class="box-card" style="width:65%">
         <div slot="header" class="clearfix">
           <span>出行人信息</span>
         </div>
@@ -201,6 +214,16 @@ export default {
           city: "北京城市酒店",
           fightno: "双人标间",
           address: "东四十条建设街15号"
+        }
+      ],
+      tableData2: [
+        {
+          date: "2016-05-02",
+          date1: "2016-05-04",
+          city: "北京城市酒店",
+          fightno: "双人标间",
+          address: "东四十条建设街15号",
+          count: 1
         }
       ],
       dialogFormVisible: false,
