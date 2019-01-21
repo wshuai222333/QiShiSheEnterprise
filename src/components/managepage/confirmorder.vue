@@ -67,6 +67,19 @@
           <el-table-column prop="date1" label="离店时间"></el-table-column>
           <el-table-column prop="fightno" label="房型"></el-table-column>
           <el-table-column prop="count" label="间数"></el-table-column>
+          <el-table-column label="">
+            <template slot-scope="scope">
+              <el-popover
+                placement="top-start"
+                title="酒店规定"
+                width="200"
+                trigger="hover"
+                content="起飞前2小时扣除80%票价;起飞前2小时后扣除100%票价"
+              >
+                <el-button slot="reference">酒店规定</el-button>
+              </el-popover>
+            </template>
+          </el-table-column>
         </el-table>
       </el-card>
 
