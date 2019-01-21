@@ -43,6 +43,7 @@
                     placeholder="出发日期"
                     v-model="form.departdate"
                     style="width: 100%;"
+                    @change="changedepartdate"
                   ></el-date-picker>
                 </el-col>
                 <el-col class="line" :span="2">
@@ -67,6 +68,7 @@
                     placeholder="返回日期"
                     v-model="form.arrivedate"
                     style="width: 100%;"
+                    @change="changearrivedate"
                   ></el-date-picker>
                 </el-col>
                 <el-col class="line" :span="2">
@@ -115,16 +117,6 @@
                 <el-radio-button label="1">火车</el-radio-button>
               </el-radio-group>
             </el-form-item>
-            <el-form-item label="期望出行时间">
-              <el-select v-model="form.expecttraveltime" placeholder="期望时间段">
-                <el-option
-                  v-for="item in expecttraveltime"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
             <el-form-item label="其他要求">
               <el-input v-model="form.travelothers" placeholder="头等舱/公务舱/指定航班(选填)"></el-input>
             </el-form-item>
@@ -135,38 +127,38 @@
             <p style="height:4px;"></p>
           </div>
 
+          <!--酒店信息-->
           <div v-show="hotelshow">
             <el-form-item label="酒店入住日期">
               <el-col :span="11">
                 <el-date-picker
                   type="date"
                   placeholder="入住日期"
-                  v-model="form.date1"
+                  v-model="form.hotelcheckindate"
                   style="width: 100%;"
                 ></el-date-picker>
               </el-col>
               <el-col class="line" :span="2">-</el-col>
               <el-col :span="11">
                 <el-date-picker
-                  :disabled="form.returndate"
                   type="date"
                   placeholder="离店日期"
-                  v-model="form.date1"
+                  v-model="form.hotelcheckoutdate"
                   style="width: 100%;"
                 ></el-date-picker>
               </el-col>
             </el-form-item>
             <el-form-item label="酒店类型">
               <el-radio-group v-model="form.hoteltype">
-                <el-radio-button label="0">现结</el-radio-button>
-                <el-radio-button label="1">预付</el-radio-button>
+                <el-radio-button label="0">立即支付</el-radio-button>
+                <el-radio-button label="1">到店支付</el-radio-button>
               </el-radio-group>
             </el-form-item>
             <el-form-item label="期望酒店位置">
               <el-radio-group v-model="form.hotellocation">
+                <el-radio-button label="0">系统默认</el-radio-button>
                 <el-radio-button label="1">目的地</el-radio-button>
                 <el-radio-button label="2">机场/车站</el-radio-button>
-                <el-radio-button label="0">无要求</el-radio-button>
               </el-radio-group>
             </el-form-item>
             <el-form-item label="目的地">
@@ -200,6 +192,8 @@
               <p style="border-bottom:solid 1px #ccc;"></p>
             </el-form-item>
           </div>
+
+          <!--出行人信息-->
           <!-- <el-form-item label="出行人">
             <el-row>
               <el-col :span="6">
@@ -354,9 +348,11 @@ export default {
         expectarrivetime: "",
         travelothers: "",
 
+        hotelcheckindate:"",
+        hotelcheckoutdate:"",
         hoteltype: "0",
         destination: "",
-        hotellocation: "1",
+        hotellocation: "0",
         hotelothers: "",
 
         hotelinfo: [{ hoteloption: "0", roomcount: 1 }],
@@ -412,6 +408,12 @@ export default {
       if (index !== -1) {
         this.dynamicValidateForm.domains.splice(index, 1);
       }
+    },
+    changedepartdate(){
+      this.form.hotelcheckindate= this.form.departdate;
+    },
+    changearrivedate(){
+      this.form.hotelcheckoutdate= this.form.arrivedate;
     }
   }
 };
