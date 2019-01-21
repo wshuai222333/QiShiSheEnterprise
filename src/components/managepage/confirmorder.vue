@@ -16,37 +16,44 @@
 
       <p style="height:10px;"></p>
       <!--行程信息-->
-      <el-card class="box-card" style="width:60%" >
+      <el-card class="box-card" style="width:60%">
         <div slot="header" class="clearfix">
           <span>行程信息</span>
           <el-button style="float: right; padding: 3px 0" type="text" @click="clickopendialog">更改航班</el-button>
         </div>
         <el-table :data="tableData3" style="width:100%" show-summary :summary-method="getSummaries">
-          <el-table-column prop="date" label="出发时间"></el-table-column>
-          <el-table-column prop="province" label="出发城市"></el-table-column>
+          <el-table-column prop="tag" label>
+            <template slot-scope="scope">
+              <el-tag
+                :type="scope.row.tag === '去程' ? 'primary' : 'success'"
+                disable-transitions
+              >{{scope.row.tag}}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="date" label="起飞时间"></el-table-column>
+          <el-table-column prop="province" label="起飞地点"></el-table-column>
           <el-table-column prop="city" label="到达时间"></el-table-column>
-          <el-table-column prop="city" label="到达城市"></el-table-column>
+          <el-table-column prop="city" label="到达地点"></el-table-column>
           <el-table-column prop="zip" label="航班号"></el-table-column>
           <el-table-column prop="zip" label="座位类型"></el-table-column>
-          
         </el-table>
       </el-card>
 
       <p style="height:5px;"></p>
 
       <!--酒店信息-->
-      <el-card class="box-card" style="width:60%" >
+      <el-card class="box-card" style="width:60%">
         <div slot="header" class="clearfix">
           <span>酒店信息</span>
-          <el-button style="float: right; padding: 3px 0" type="text" @click="clickopendialog">更改酒店</el-button>
+          <el-button style="float: right; padding: 3px 0" type="text" @click="clickopenhdialog">更改酒店</el-button>
         </div>
         <el-table :data="tableData3" style="width:100%" show-summary :summary-method="getSummaries">
-          <el-table-column prop="province" label="酒店名称" ></el-table-column>
-          <el-table-column prop="zip" label="酒店地址" ></el-table-column>
-          <el-table-column prop="city" label="入住时间" ></el-table-column>
-          <el-table-column prop="address" label="离店时间" ></el-table-column>
-          <el-table-column prop="zip" label="房型" ></el-table-column>
-          <el-table-column prop="zip" label="间数" ></el-table-column>
+          <el-table-column prop="province" label="酒店名称"></el-table-column>
+          <el-table-column prop="zip" label="酒店地址"></el-table-column>
+          <el-table-column prop="city" label="入住时间"></el-table-column>
+          <el-table-column prop="address" label="离店时间"></el-table-column>
+          <el-table-column prop="zip" label="房型"></el-table-column>
+          <el-table-column prop="zip" label="间数"></el-table-column>
         </el-table>
       </el-card>
 
@@ -58,7 +65,7 @@
         </div>
         <el-table :data="tableData3" style="width:100%" show-summary :summary-method="getSummaries">
           <el-table-column prop="province" label="姓名"></el-table-column>
-          <el-table-column prop="zip" label="身份证号" ></el-table-column>
+          <el-table-column prop="zip" label="身份证号"></el-table-column>
           <el-table-column prop="city" label="电话"></el-table-column>
           <el-table-column prop="zip" label="票号"></el-table-column>
         </el-table>
@@ -78,11 +85,31 @@
         @current-change="handleCurrentChange"
         style="width: 100%"
       >
-        <el-table-column property="date" label="出发日期" style="width: 20%"></el-table-column>
-        <el-table-column property="date1" label="出发到达时间" style="width: 20%"></el-table-column>
-        <el-table-column property="name" label="出发到达城市" style="width: 20%"></el-table-column>
-        <el-table-column property="fightno" label="航班号" style="width: 20%"></el-table-column>
-        <el-table-column property="address" label="舱位类型" style="width: 20%"></el-table-column>
+        <el-table-column property="date" label="出发时间"></el-table-column>
+        <el-table-column property="date1" label="返回时间"></el-table-column>
+        <el-table-column property="city" label="往返城市"></el-table-column>
+        <el-table-column property="fightno" label="航班号"></el-table-column>
+        <el-table-column property="address" label="舱位类型"></el-table-column>
+      </el-table>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="onModifyQrcode(form.userid)">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!--更改酒店弹窗-->
+    <el-dialog title="更改酒店" :visible.sync="dialogHFormVisible">
+      <el-table
+        ref="singleTable"
+        :data="tableData1"
+        highlight-current-row
+        @current-change="handleCurrentChange"
+        style="width: 100%"
+      >
+        <el-table-column property="city" label="酒店名称"></el-table-column>
+        <el-table-column property="address" label="酒店地址"></el-table-column>
+        <el-table-column property="date" label="入住时间"></el-table-column>
+        <el-table-column property="date1" label="离店时间"></el-table-column>
+        <el-table-column property="fightno" label="房间类型"></el-table-column>
       </el-table>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -103,7 +130,8 @@ export default {
           province: "上海",
           city: "普陀区",
           address: "上海市普陀区金沙江路 1518 弄",
-          zip: 200333
+          zip: 200333,
+          tag: "去程"
         },
         {
           date: "2016-05-03",
@@ -111,39 +139,72 @@ export default {
           province: "上海",
           city: "普陀区",
           address: "上海市普陀区金沙江路 1518 弄",
-          zip: 200333
+          zip: 200333,
+          tag: "返程"
         }
       ],
       tableData: [
         {
-          date: "2016-05-02",
-          date1: "09:00-19:00",
-          name: "北京首都-上海虹桥",
-          fightno: "CA2356",
+          date: "2016-05-02 09:00-19:00",
+          date1: "2016-05-02 10:00-13:00",
+          city: "北京首都-上海虹桥-北京首都",
+          fightno: "CA2356/CA3467",
           address: "经济舱"
         },
         {
-          date: "2016-05-03",
-          date1: "09:00-19:00",
-          name: "北京南苑-上海虹桥",
-          fightno: "CA2356",
+          date: "2016-05-02 09:00-19:00",
+          date1: "2016-05-02 10:00-13:00",
+          city: "北京首都-上海虹桥-北京首都",
+          fightno: "CA2356/CA3467",
           address: "经济舱"
         },
         {
-          date: "2016-05-02",
-          date1: "09:00-19:00",
-          fightno: "CA2356",
+          date: "2016-05-02 09:00-19:00",
+          date1: "2016-05-02 10:00-13:00",
+          city: "北京首都-上海虹桥-北京首都",
+          fightno: "CA2356/CA3467",
           address: "经济舱"
         },
         {
-          date: "2016-05-02",
-          date1: "09:00-19:00",
-          name: "北京首都-上海虹桥",
-          fightno: "CA2356",
+          date: "2016-05-02 09:00-19:00",
+          date1: "2016-05-02 10:00-13:00",
+          city: "北京首都-上海虹桥-北京首都",
+          fightno: "CA2356/CA3467",
           address: "经济舱"
         }
       ],
-      dialogFormVisible: false
+      tableData1: [
+        {
+          date: "2016-05-02",
+          date1: "2016-05-04",
+          city: "北京城市酒店",
+          fightno: "双人标间",
+          address: "东四十条建设街15号"
+        },
+        {
+          date: "2016-05-02",
+          date1: "2016-05-04",
+          city: "北京城市酒店",
+          fightno: "双人标间",
+          address: "东四十条建设街15号"
+        },
+        {
+          date: "2016-05-02",
+          date1: "2016-05-04",
+          city: "北京城市酒店",
+          fightno: "双人标间",
+          address: "东四十条建设街15号"
+        },
+        {
+          date: "2016-05-02",
+          date1: "2016-05-04",
+          city: "北京城市酒店",
+          fightno: "双人标间",
+          address: "东四十条建设街15号"
+        }
+      ],
+      dialogFormVisible: false,
+      dialogHFormVisible: false
     };
   },
   methods: {
@@ -180,6 +241,9 @@ export default {
     },
     clickopendialog() {
       this.dialogFormVisible = true;
+    },
+    clickopenhdialog() {
+      this.dialogHFormVisible = true;
     }
   }
 };

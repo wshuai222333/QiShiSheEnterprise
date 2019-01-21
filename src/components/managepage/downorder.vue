@@ -156,14 +156,16 @@
             </el-form-item>
             <el-form-item label="期望酒店位置">
               <el-radio-group v-model="form.hotellocation">
-                <el-radio-button label="0">系统默认</el-radio-button>
-                <el-radio-button label="1">目的地</el-radio-button>
-                <el-radio-button label="2">机场/车站</el-radio-button>
+                <el-radio-button label="0" onhotellocationClick @click.native="onhotellocationClick(0)">系统默认</el-radio-button>
+                <el-radio-button label="1" onhotellocationClick @click.native="onhotellocationClick(1)">目的地</el-radio-button>
+                <el-radio-button label="2" onhotellocationClick @click.native="onhotellocationClick(2)">机场/车站</el-radio-button>
               </el-radio-group>
             </el-form-item>
-            <el-form-item label="目的地">
+            <div >
+            <el-form-item label="目的地" v-show="destinationshow">
               <el-input v-model="form.destination" placeholder="具体商圈/街区(选填)"></el-input>
             </el-form-item>
+            </div>
             <el-form-item label="其他要求">
               <el-input v-model="form.hotelothers" placeholder="其他位置/具体房间要求/指定酒店(选填)"></el-input>
             </el-form-item>
@@ -371,7 +373,8 @@ export default {
         returndate: false
       },
       airshow: true,
-      hotelshow: true
+      hotelshow: true,
+      destinationshow:false
     };
   },
   methods: {
@@ -414,7 +417,16 @@ export default {
     },
     changearrivedate(){
       this.form.hotelcheckoutdate= this.form.arrivedate;
-    }
+    },
+    onhotellocationClick(type) {
+      debugger;
+      if (type == 1) {
+        this.destinationshow = true;
+      } 
+      else{
+        this.destinationshow = false;
+      }
+    },
   }
 };
 </script>
