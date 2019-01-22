@@ -15,41 +15,92 @@
       </el-steps>
 
       <p style="height:10px;"></p>
-      <!--行程信息-->
+      <!--机票信息-->
       <el-card class="box-card" style="width:65%">
         <div slot="header" class="clearfix">
-          <span>行程信息</span>
+          <span>机票信息</span>
           <el-button style="float: right; padding: 3px 0" type="text" @click="clickopendialog">更改航班</el-button>
         </div>
-        <el-table :data="tableData3" style="width:100%" show-summary :summary-method="getSummaries">
-          <el-table-column prop="tag" label>
-            <template slot-scope="scope">
-              <el-tag
-                :type="scope.row.tag === '去程' ? 'primary' : 'success'"
-                disable-transitions
-              >{{scope.row.tag}}</el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column prop="date" label="起飞时间"></el-table-column>
-          <el-table-column prop="province" label="起飞地点"></el-table-column>
-          <el-table-column prop="city" label="到达时间"></el-table-column>
-          <el-table-column prop="city" label="到达地点"></el-table-column>
-          <el-table-column prop="zip" label="航班号"></el-table-column>
-          <el-table-column prop="zip" label="座位类型"></el-table-column>
-          <el-table-column label="">
-            <template slot-scope="scope">
-              <el-popover
-                placement="top-start"
-                title="退改签规定"
-                width="200"
-                trigger="hover"
-                content="起飞前2小时扣除80%票价;起飞前2小时后扣除100%票价"
-              >
-                <el-button slot="reference">退改签</el-button>
-              </el-popover>
-            </template>
-          </el-table-column>
-        </el-table>
+        <div>
+          <el-table :data="tableData3" style="width:100%">
+            <el-table-column prop="tag" label>
+              <template slot-scope="scope">
+                <el-tag
+                  :type="scope.row.tag === '去程' ? 'primary' : 'success'"
+                  disable-transitions
+                >{{scope.row.tag}}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column prop="date" label="起飞时间"></el-table-column>
+            <el-table-column prop="province" label="起飞地点"></el-table-column>
+            <el-table-column prop="city" label="到达时间"></el-table-column>
+            <el-table-column prop="city" label="到达地点"></el-table-column>
+            <el-table-column prop="zip" label="航班号"></el-table-column>
+            <el-table-column prop="zip" label="座位类型"></el-table-column>
+            <el-table-column label>
+              <template slot-scope="scope">
+                <el-popover
+                  placement="top-start"
+                  title="退改签规定"
+                  width="200"
+                  trigger="hover"
+                  content="起飞前2小时扣除80%票价;起飞前2小时后扣除100%票价"
+                >
+                  <el-button slot="reference">退改签</el-button>
+                </el-popover>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+        <div class="price">
+          <span class="price-subtotal">小计:1000</span>
+          <br>
+          <span class="price-tax">燃油基建:50</span>
+        </div>
+      </el-card>
+
+      <p style="height:5px;"></p>
+
+       <!--火车票信息-->
+      <el-card class="box-card" style="width:65%">
+        <div slot="header" class="clearfix">
+          <span>火车票信息</span>
+          <el-button style="float: right; padding: 3px 0" type="text" @click="clickopendialog">更改火车票</el-button>
+        </div>
+        <div>
+          <el-table :data="tableData3" style="width:100%">
+            <el-table-column prop="tag" label>
+              <template slot-scope="scope">
+                <el-tag
+                  :type="scope.row.tag === '去程' ? 'primary' : 'success'"
+                  disable-transitions
+                >{{scope.row.tag}}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column prop="date" label="出发时间"></el-table-column>
+            <el-table-column prop="province" label="出发地"></el-table-column>
+            <el-table-column prop="city" label="到达时间"></el-table-column>
+            <el-table-column prop="city" label="目的地"></el-table-column>
+            <el-table-column prop="zip" label="车次"></el-table-column>
+            <el-table-column prop="zip" label="座位类型"></el-table-column>
+            <el-table-column label>
+              <template slot-scope="scope">
+                <el-popover
+                  placement="top-start"
+                  title="退改签规定"
+                  width="200"
+                  trigger="hover"
+                  content="起飞前2小时扣除80%票价;起飞前2小时后扣除100%票价"
+                >
+                  <el-button slot="reference">退改签</el-button>
+                </el-popover>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+        <div class="price">
+          <span class="price-subtotal">小计:1000</span>
+        </div>
       </el-card>
 
       <p style="height:5px;"></p>
@@ -60,27 +111,34 @@
           <span>酒店信息</span>
           <el-button style="float: right; padding: 3px 0" type="text" @click="clickopenhdialog">更改酒店</el-button>
         </div>
-        <el-table :data="tableData2" style="width:100%" show-summary :summary-method="getSummaries">
-          <el-table-column prop="city" label="酒店名称"></el-table-column>
-          <el-table-column prop="address" label="酒店地址"></el-table-column>
-          <el-table-column prop="date" label="入住时间"></el-table-column>
-          <el-table-column prop="date1" label="离店时间"></el-table-column>
-          <el-table-column prop="fightno" label="房型"></el-table-column>
-          <el-table-column prop="count" label="间数"></el-table-column>
-          <el-table-column label="">
-            <template slot-scope="scope">
-              <el-popover
-                placement="top-start"
-                title="酒店规定"
-                width="200"
-                trigger="hover"
-                content="起飞前2小时扣除80%票价;起飞前2小时后扣除100%票价"
-              >
-                <el-button slot="reference">酒店规定</el-button>
-              </el-popover>
-            </template>
-          </el-table-column>
-        </el-table>
+        <div>
+          <el-table :data="tableData2" style="width:100%">
+            <el-table-column prop="city" label="酒店名称"></el-table-column>
+            <el-table-column prop="address" label="酒店地址"></el-table-column>
+            <el-table-column prop="date" label="入住时间"></el-table-column>
+            <el-table-column prop="date1" label="离店时间"></el-table-column>
+            <el-table-column prop="fightno" label="房型"></el-table-column>
+            <el-table-column prop="count" label="间数"></el-table-column>
+            <el-table-column label>
+              <template slot-scope="scope">
+                <el-popover
+                  placement="top-start"
+                  title="酒店规定"
+                  width="200"
+                  trigger="hover"
+                  content="起飞前2小时扣除80%票价;起飞前2小时后扣除100%票价"
+                >
+                  <el-button slot="reference">酒店规定</el-button>
+                </el-popover>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+        <div class="price">
+          <span class="price-subtotal">小计:1000</span>
+          <br>
+          <span class="price-tax">房间数:3</span>
+        </div>
       </el-card>
 
       <!--出行人信息-->
@@ -89,12 +147,19 @@
         <div slot="header" class="clearfix">
           <span>出行人信息</span>
         </div>
-        <el-table :data="tableData3" style="width:100%" show-summary :summary-method="getSummaries">
-          <el-table-column prop="province" label="姓名"></el-table-column>
-          <el-table-column prop="zip" label="身份证号"></el-table-column>
-          <el-table-column prop="city" label="电话"></el-table-column>
-          <el-table-column prop="zip" label="票号"></el-table-column>
-        </el-table>
+        <div>
+          <el-table :data="tableData3" style="width:100%">
+            <el-table-column prop="province" label="姓名"></el-table-column>
+            <el-table-column prop="zip" label="身份证号"></el-table-column>
+            <el-table-column prop="city" label="电话"></el-table-column>
+            <el-table-column prop="zip" label="票号"></el-table-column>
+          </el-table>
+        </div>
+        <div class="price">
+          <strong class="price-subtotal">总计:1000</strong>
+          <br>
+          <span class="price-tax">人数:3</span>
+        </div>
       </el-card>
       <p style="height:10px;"></p>
       <el-row>
@@ -307,5 +372,15 @@ export default {
 }
 .red {
   color: #ff0000;
+}
+.price {
+  padding: 5px;
+  float: right;
+}
+.price-subtotal {
+  font-size: 14px;
+}
+.price-tax {
+  font-size: 12px;
 }
 </style>
