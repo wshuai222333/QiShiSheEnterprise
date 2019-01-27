@@ -19,30 +19,30 @@
       <el-table :data="tableData3" style="width:60%">
         <el-table-column label="行程信息">
           <el-table-column prop="province" label="出发时间" style="width:10%"></el-table-column>
-          <el-table-column prop="city" label="出发城市" style="width:10%">></el-table-column>
+          <el-table-column prop="city" label="出发城市" style="width:10%"></el-table-column>
           <el-table-column prop="address" label="到达时间" style="width:10%">></el-table-column>
-          <el-table-column prop="zip" label="到达城市" style="width:10%">></el-table-column>
-          <el-table-column prop="zip" label="航班号" style="width:10%">></el-table-column>
-          <el-table-column prop="zip" label="仓位" style="width:10%">></el-table-column>
+          <el-table-column prop="zip" label="到达城市" style="width:10%"></el-table-column>
+          <el-table-column prop="zip" label="航班号" style="width:10%"></el-table-column>
+          <el-table-column prop="zip" label="仓位" style="width:10%"></el-table-column>
         </el-table-column>
       </el-table>
 
       <el-table :data="tableData3" style="width:60%">
         <el-table-column label="酒店信息" >
-          <el-table-column prop="province" label="酒店名称" style="width:10%">></el-table-column>
-          <el-table-column prop="zip" label="酒店地址" style="width:10%">></el-table-column>
-          <el-table-column prop="city" label="入住时间" style="width:10%">></el-table-column>
-          <el-table-column prop="address" label="离店时间" style="width:10%">></el-table-column>
-          <el-table-column prop="zip" label="房型" style="width:10%">></el-table-column>
-          <el-table-column prop="zip" label="间数" style="width:10%">></el-table-column>
+          <el-table-column prop="province" label="酒店名称" style="width:10%"></el-table-column>
+          <el-table-column prop="zip" label="酒店地址" style="width:10%"></el-table-column>
+          <el-table-column prop="city" label="入住时间" style="width:10%"></el-table-column>
+          <el-table-column prop="address" label="离店时间" style="width:10%"></el-table-column>
+          <el-table-column prop="zip" label="房型" style="width:10%"></el-table-column>
+          <el-table-column prop="zip" label="间数" style="width:10%"></el-table-column>
         </el-table-column>
       </el-table>
 
        <el-table :data="tableData3" style="width:60%">
         <el-table-column label="出行人信息">
-          <el-table-column prop="province" label="出行人姓名" style="width:20%">></el-table-column>
-          <el-table-column prop="zip" label="出行人身份证号" style="width:20%">></el-table-column>
-          <el-table-column prop="city" label="出行人电话" style="width:20%">></el-table-column>
+          <el-table-column prop="province" label="出行人姓名" style="width:20%"></el-table-column>
+          <el-table-column prop="zip" label="出行人身份证号" style="width:20%"></el-table-column>
+          <el-table-column prop="city" label="出行人电话" style="width:20%"></el-table-column>
         </el-table-column>
       </el-table>
        <p style="height:10px;"></p>
