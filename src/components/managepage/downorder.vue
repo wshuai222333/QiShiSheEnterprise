@@ -91,30 +91,28 @@
               </el-row>
             </el-form-item>
             <el-form-item label="行程城市">
-              <el-col :span="11">
-                <el-autocomplete
-                  popper-class="my-autocomplete"
-                  v-model="state3"
-                  :fetch-suggestions="querySearch"
-                  placeholder="出发城市"
-                  @select="handleSelect"
-                >
-                  <i class="el-icon-location-outline" slot="suffix" @click="handleIconClick"></i>
-                  <template slot-scope="{ item }">
-                    <div class="name">{{ item.city }}</div>
-                  </template>
-                </el-autocomplete>
+              <el-col :span="8">
+                <el-select v-model="value8" filterable  :filter-method="querySearch" placeholder="出发城市/汉字/全拼">
+                  <el-option
+                    v-for="item in restaurants"
+                    :key="item.pinyin"
+                    :label="item.city"
+                    :value="item.pinyin"
+                  ></el-option>
+                </el-select>
               </el-col>
               <el-col class="line" :span="2">
                 <i class="el-icon-arrow-right"></i>
               </el-col>
               <el-col :span="11">
-                <el-cascader
-                  :options="options"
-                  v-model="form.options"
-                  style="width: 100%;"
-                  placeholder="到达城市"
-                ></el-cascader>
+                <el-select v-model="value8" filterable  :filter-method="querySearch" placeholder="到达城市/汉字/全拼">
+                  <el-option
+                    v-for="item in restaurants"
+                    :key="item.pinyin"
+                    :label="item.city"
+                    :value="item.pinyin"
+                  ></el-option>
+                </el-select>
               </el-col>
             </el-form-item>
             <el-form-item label="期望交通方式">
@@ -364,6 +362,7 @@ export default {
       ],
       restaurants: [],
       state3: "",
+      value8: "",
       form: {
         bookingtype: "2",
         traveltype: "1",
@@ -467,33 +466,21 @@ export default {
       debugger;
       var tishi = dynamicHValidateForm;
     },
-    querySearch(queryString, cb) {
-      debugger;
-      var restaurants = this.restaurants;
-      var results = queryString
-        ? restaurants.filter(this.createFilter(queryString))
-        : restaurants;
-      // 调用 callback 返回建议列表的数据
-      cb(results);
-    },
-    createFilter(queryString) {
-      return restaurant => {
-        return (
-          restaurant.city.toLowerCase().indexOf(queryString.toLowerCase()) === 0
-        );
-      };
+    querySearch(query) {
+      if (query !== "") {
+        this.restaurants = this.loadAll().filter(item => {
+          return item.pinyin.toLowerCase().indexOf(query.toLowerCase()) > -1
+          || item.city.toLowerCase().indexOf(query.toLowerCase()) > -1;
+        });
+      } else {
+        this.restaurants = this.loadAll();
+      }
     },
     loadAll() {
       return [
         { city: "北京", pinyin: "beijing", value: "bjs" },
         { city: "上海", pinyin: "shanghai", value: "sha" }
       ];
-    },
-    handleSelect(item) {
-      console.log(item);
-    },
-    handleIconClick(ev) {
-      console.log(ev);
     }
   },
   mounted() {
