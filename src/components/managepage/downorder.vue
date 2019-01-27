@@ -14,6 +14,7 @@
         <el-step title="确认" description="确认具体行程"></el-step>
         <el-step title="出行" description="行程制定成功"></el-step>
       </el-steps>
+      <!--form表单-->
       <div class="form-box">
         <el-form ref="form" :model="form" label-width="100px">
           <el-form-item>
@@ -21,12 +22,12 @@
           </el-form-item>
           <el-form-item label="预定类型">
             <el-radio-group v-model="form.bookingtype">
-              <el-radio-button label="0" @click.native="onBookingTypeClick(0)">机票</el-radio-button>
+              <el-radio-button label="0" @click.native="onBookingTypeClick(0)">机票/火车票</el-radio-button>
               <el-radio-button label="1" @click.native="onBookingTypeClick(1)">酒店</el-radio-button>
-              <el-radio-button label="2" @click.native="onBookingTypeClick(2)">机票&&酒店</el-radio-button>
+              <el-radio-button label="2" @click.native="onBookingTypeClick(2)">机票/火车票&&酒店</el-radio-button>
             </el-radio-group>
           </el-form-item>
-
+          <!--行程信息-->
           <div v-show="airshow">
             <el-form-item label="行程类型">
               <el-radio-group v-model="form.traveltype">
@@ -35,33 +36,74 @@
               </el-radio-group>
             </el-form-item>
             <el-form-item label="行程日期">
-              <el-col :span="11">
-                <el-date-picker
-                  type="date"
-                  placeholder="出发日期"
-                  v-model="form.date1"
-                  style="width: 100%;"
-                ></el-date-picker>
-              </el-col>
-              <el-col class="line" :span="2">-</el-col>
-              <el-col :span="11">
-                <el-date-picker
-                  :disabled="form.returndate"
-                  type="date"
-                  placeholder="返回日期"
-                  v-model="form.date1"
-                  style="width: 100%;"
-                ></el-date-picker>
-              </el-col>
+              <el-row>
+                <el-col :span="11">
+                  <el-date-picker
+                    type="date"
+                    placeholder="出发日期"
+                    v-model="form.departdate"
+                    style="width: 100%;"
+                    @change="changedepartdate"
+                  ></el-date-picker>
+                </el-col>
+                <el-col class="line" :span="2">
+                  <i class="el-icon-minus"></i>
+                </el-col>
+                <el-col :span="11">
+                  <el-select v-model="form.expectdeparttime" placeholder="期望时间段">
+                    <el-option
+                      v-for="item in expecttraveltime"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    ></el-option>
+                  </el-select>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="11">
+                  <el-date-picker
+                    :disabled="form.returndate"
+                    type="date"
+                    placeholder="返回日期"
+                    v-model="form.arrivedate"
+                    style="width: 100%;"
+                    @change="changearrivedate"
+                  ></el-date-picker>
+                </el-col>
+                <el-col class="line" :span="2">
+                  <i class="el-icon-minus"></i>
+                </el-col>
+                <el-col :span="11">
+                  <el-select
+                    v-model="form.expecttraveltime"
+                    :disabled="form.returndate"
+                    placeholder="期望时间段"
+                  >
+                    <el-option
+                      v-for="item in expecttraveltime"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    ></el-option>
+                  </el-select>
+                </el-col>
+              </el-row>
             </el-form-item>
             <el-form-item label="行程城市">
               <el-col :span="11">
-                <el-cascader
-                  :options="options"
-                  v-model="form.options"
-                  style="width: 100%;"
+                <el-autocomplete
+                  popper-class="my-autocomplete"
+                  v-model="state3"
+                  :fetch-suggestions="querySearch"
                   placeholder="出发城市"
-                ></el-cascader>
+                  @select="handleSelect"
+                >
+                  <i class="el-icon-location-outline" slot="suffix" @click="handleIconClick"></i>
+                  <template slot-scope="{ item }">
+                    <div class="name">{{ item.city }}</div>
+                  </template>
+                </el-autocomplete>
               </el-col>
               <el-col class="line" :span="2">
                 <i class="el-icon-arrow-right"></i>
@@ -81,16 +123,6 @@
                 <el-radio-button label="1">火车</el-radio-button>
               </el-radio-group>
             </el-form-item>
-            <el-form-item label="期望出行时间">
-              <el-select v-model="form.expecttraveltime" placeholder="期望时间段">
-                <el-option
-                  v-for="item in expecttraveltime"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
             <el-form-item label="其他要求">
               <el-input v-model="form.travelothers" placeholder="头等舱/公务舱/指定航班(选填)"></el-input>
             </el-form-item>
@@ -101,27 +133,82 @@
             <p style="height:4px;"></p>
           </div>
 
+          <!--酒店信息-->
           <div v-show="hotelshow">
-            <el-form-item label="目的地">
-              <el-input v-model="form.destination" placeholder="具体商圈/街区(选填)"></el-input>
+            <el-form-item label="酒店入住日期">
+              <el-col :span="11">
+                <el-date-picker
+                  type="date"
+                  placeholder="入住日期"
+                  v-model="form.hotelcheckindate"
+                  style="width: 100%;"
+                ></el-date-picker>
+              </el-col>
+              <el-col class="line" :span="2">-</el-col>
+              <el-col :span="11">
+                <el-date-picker
+                  type="date"
+                  placeholder="离店日期"
+                  v-model="form.hotelcheckoutdate"
+                  style="width: 100%;"
+                ></el-date-picker>
+              </el-col>
+            </el-form-item>
+            <el-form-item label="酒店类型">
+              <el-radio-group v-model="form.hoteltype">
+                <el-radio-button label="0">立即支付</el-radio-button>
+                <el-radio-button label="1">到店支付</el-radio-button>
+              </el-radio-group>
             </el-form-item>
             <el-form-item label="期望酒店位置">
               <el-radio-group v-model="form.hotellocation">
-                <el-radio-button label="1">目的地</el-radio-button>
-                <el-radio-button label="2">机场/车站</el-radio-button>
-                <el-radio-button label="0">无需预定</el-radio-button>
+                <el-radio-button
+                  label="0"
+                  onhotellocationClick
+                  @click.native="onhotellocationClick(0)"
+                >系统默认</el-radio-button>
+                <el-radio-button
+                  label="1"
+                  onhotellocationClick
+                  @click.native="onhotellocationClick(1)"
+                >目的地</el-radio-button>
+                <el-radio-button
+                  label="2"
+                  onhotellocationClick
+                  @click.native="onhotellocationClick(2)"
+                >机场/车站</el-radio-button>
               </el-radio-group>
             </el-form-item>
+            <div>
+              <el-form-item label="目的地" v-show="destinationshow">
+                <el-input v-model="form.destination" placeholder="具体商圈/街区(选填)"></el-input>
+              </el-form-item>
+            </div>
             <el-form-item label="其他要求">
-              <el-input v-model="form.hotelothers" placeholder="其他位置/具体房间要求(选填)"></el-input>
+              <el-input v-model="form.hotelothers" placeholder="其他位置/具体房间要求/指定酒店(选填)"></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" icon="el-icon-plus" size="small" round>添加房型</el-button>
+              <el-button
+                type="primary"
+                icon="el-icon-plus"
+                size="small"
+                round
+                @click="addHDomain"
+              >添加房型</el-button>
             </el-form-item>
-            <el-form-item label="房间信息">
+
+            <el-form-item
+              v-for="(domain, index) in dynamicHValidateForm.domains"
+              :label="'房型' + (index+1)"
+              :key="domain.key"
+              :prop="'domains.' + index + '.value'"
+              :rules="{
+      required: true, message: '房型不能为空', trigger: 'blur'
+    }"
+            >
               <el-row>
-                <el-col :span="6">
-                  <el-select v-model="form.hotelinfo[0].hoteloption" placeholder="选择房型">
+                <el-col :span="5">
+                  <el-select v-model="domain.value" placeholder="选择房型">
                     <el-option
                       v-for="item in hoteloptions"
                       :key="item.value"
@@ -131,32 +218,17 @@
                   </el-select>
                 </el-col>
                 <el-col :span="2" :offset="1">
-                  <el-input v-model="form.hotelinfo[0].roomcount"></el-input>
+                  <el-input v-model="domain.count"></el-input>
                 </el-col>
                 <el-col :span="2">间</el-col>
+                <el-col :span="2">
+                  <el-button @click.prevent="removeHDomain(domain)">删除</el-button>
+                </el-col>
               </el-row>
             </el-form-item>
-            <el-form-item>
-              <p style="border-bottom:solid 1px #ccc;"></p>
-            </el-form-item>
           </div>
-          <!-- <el-form-item label="出行人">
-            <el-row>
-              <el-col :span="6">
-                <el-select v-model="form.traveluser[0].staffname" placeholder="选择出行人">
-                  <el-option
-                    v-for="item in staffoptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  ></el-option>
-                </el-select>
-              </el-col>
-              <el-col :span="6" :offset="1">
-                <el-button type="primary" icon="el-icon-plus" size="small" round>添加出行人</el-button>
-              </el-col>
-            </el-row>
-          </el-form-item>-->
+
+          <!--出行人信息-->
           <el-form-item>
             <el-button
               type="primary"
@@ -168,7 +240,7 @@
           </el-form-item>
           <el-form-item
             v-for="(domain, index) in dynamicValidateForm.domains"
-            :label="'域名' + index"
+            :label="'出行人' + (index+1)"
             :key="domain.key"
             :prop="'domains.' + index + '.value'"
             :rules="{
@@ -264,11 +336,6 @@ export default {
         { value: "8", label: "20:00-22:00" },
         { value: "9", label: "22:00-00:00" }
       ],
-      hoteloptions: [
-        { value: "0", label: "双人标间" },
-        { value: "1", label: "商务大床" },
-        { value: "2", label: "豪华套间" }
-      ],
       staffoptions: [
         { value: "王帅", label: "王帅" },
         { value: "李欢", label: "李欢" },
@@ -277,23 +344,43 @@ export default {
       dynamicValidateForm: {
         domains: [
           {
-            value: ""
+            value: "王帅"
           }
         ]
       },
+      dynamicHValidateForm: {
+        domains: [
+          {
+            value: "0",
+            count: 1
+          }
+        ]
+      },
+      hoteloptions: [
+        { value: "0", label: "双人标间" },
+        { value: "1", label: "商务大床" },
+        { value: "2", label: "豪华大床" },
+        { value: "3", label: "豪华套件" }
+      ],
+      restaurants: [],
+      state3: "",
       form: {
         bookingtype: "2",
         traveltype: "1",
-        departtime: "",
-        arrivetime: "",
+        departdate: "",
+        arrivedate: "",
         departcity: "",
         arrivecity: "",
         travelway: "0",
-        expecttraveltime: "0",
+        expectdeparttime: "",
+        expectarrivetime: "",
         travelothers: "",
 
+        hotelcheckindate: "",
+        hotelcheckoutdate: "",
+        hoteltype: "0",
         destination: "",
-        hotellocation: "1",
+        hotellocation: "0",
         hotelothers: "",
 
         hotelinfo: [{ hoteloption: "0", roomcount: 1 }],
@@ -312,7 +399,8 @@ export default {
         returndate: false
       },
       airshow: true,
-      hotelshow: true
+      hotelshow: true,
+      destinationshow: false
     };
   },
   methods: {
@@ -349,7 +437,88 @@ export default {
       if (index !== -1) {
         this.dynamicValidateForm.domains.splice(index, 1);
       }
+    },
+    addHDomain() {
+      this.dynamicHValidateForm.domains.push({
+        value: "",
+        key: Date.now()
+      });
+    },
+    removeHDomain(item) {
+      var index = this.dynamicHValidateForm.domains.indexOf(item);
+      if (index !== -1) {
+        this.dynamicHValidateForm.domains.splice(index, 1);
+      }
+    },
+    changedepartdate() {
+      this.form.hotelcheckindate = this.form.departdate;
+    },
+    changearrivedate() {
+      this.form.hotelcheckoutdate = this.form.arrivedate;
+    },
+    onhotellocationClick(type) {
+      if (type == 1) {
+        this.destinationshow = true;
+      } else {
+        this.destinationshow = false;
+      }
+    },
+    onSubmit() {
+      debugger;
+      var tishi = dynamicHValidateForm;
+    },
+    querySearch(queryString, cb) {
+      debugger;
+      var restaurants = this.restaurants;
+      var results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
+    createFilter(queryString) {
+      return restaurant => {
+        return (
+          restaurant.city.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+        );
+      };
+    },
+    loadAll() {
+      return [
+        { city: "北京", pinyin: "beijing", value: "bjs" },
+        { city: "上海", pinyin: "shanghai", value: "sha" }
+      ];
+    },
+    handleSelect(item) {
+      console.log(item);
+    },
+    handleIconClick(ev) {
+      console.log(ev);
     }
+  },
+  mounted() {
+    this.restaurants = this.loadAll();
   }
 };
 </script>
+<style scoped lang="scss">
+.my-autocomplete {
+  li {
+    line-height: normal;
+    padding: 7px;
+
+    .name {
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+    .addr {
+      font-size: 12px;
+      color: #b4b4b4;
+    }
+
+    .highlighted .addr {
+      color: #ddd;
+    }
+  }
+}
+</style>
