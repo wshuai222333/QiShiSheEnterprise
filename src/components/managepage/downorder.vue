@@ -92,25 +92,35 @@
             </el-form-item>
             <el-form-item label="行程城市">
               <el-col :span="8">
-                <el-select v-model="value8" filterable  :filter-method="querySearch" placeholder="出发城市/汉字/全拼">
+                <el-select
+                  v-model="departcity"
+                  filterable
+                  :filter-method="querySearch"
+                  placeholder="出发城市/汉字/全拼"
+                >
                   <el-option
                     v-for="item in restaurants"
-                    :key="item.pinyin"
-                    :label="item.city"
-                    :value="item.pinyin"
+                    :key="item.City_PinYin"
+                    :label="item.City_Name"
+                    :value="item.City_PinYin"
                   ></el-option>
                 </el-select>
               </el-col>
               <el-col class="line" :span="2">
                 <i class="el-icon-arrow-right"></i>
               </el-col>
-              <el-col :span="11">
-                <el-select v-model="value8" filterable  :filter-method="querySearch" placeholder="到达城市/汉字/全拼">
+              <el-col :span="8">
+                <el-select
+                  v-model="arrivecity"
+                  filterable
+                  :filter-method="querySearch"
+                  placeholder="到达城市/汉字/全拼"
+                >
                   <el-option
                     v-for="item in restaurants"
-                    :key="item.pinyin"
-                    :label="item.city"
-                    :value="item.pinyin"
+                    :key="item.City_PinYin"
+                    :label="item.City_Name"
+                    :value="item.City_PinYin"
                   ></el-option>
                 </el-select>
               </el-col>
@@ -248,9 +258,9 @@
             <el-select v-model="domain.value" placeholder="选择出行人">
               <el-option
                 v-for="item in staffoptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                :key="item.StaffId"
+                :label="item.StaffName"
+                :value="item.StaffId"
               ></el-option>
             </el-select>
 
@@ -267,62 +277,13 @@
 </template>
 
 <script>
+import Service from "../../_common";
+
 export default {
   name: "baseform",
   data: function() {
     return {
-      options: [
-        {
-          value: "guangdong",
-          label: "广东省",
-          children: [
-            {
-              value: "guangzhou",
-              label: "广州市",
-              children: [
-                {
-                  value: "tianhe",
-                  label: "天河区"
-                },
-                {
-                  value: "haizhu",
-                  label: "海珠区"
-                }
-              ]
-            },
-            {
-              value: "dongguan",
-              label: "东莞市",
-              children: [
-                {
-                  value: "changan",
-                  label: "长安镇"
-                },
-                {
-                  value: "humen",
-                  label: "虎门镇"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          value: "hunan",
-          label: "湖南省",
-          children: [
-            {
-              value: "changsha",
-              label: "长沙市",
-              children: [
-                {
-                  value: "yuelu",
-                  label: "岳麓区"
-                }
-              ]
-            }
-          ]
-        }
-      ],
+      user: null,
       expecttraveltime: [
         { value: "0", label: "06:00-08:00" },
         { value: "1", label: "08:00-10:00" },
@@ -334,15 +295,11 @@ export default {
         { value: "8", label: "20:00-22:00" },
         { value: "9", label: "22:00-00:00" }
       ],
-      staffoptions: [
-        { value: "王帅", label: "王帅" },
-        { value: "李欢", label: "李欢" },
-        { value: "张翰", label: "张翰" }
-      ],
+      staffoptions: [],
       dynamicValidateForm: {
         domains: [
           {
-            value: "王帅"
+            value: ""
           }
         ]
       },
@@ -361,7 +318,7 @@ export default {
         { value: "3", label: "豪华套件" }
       ],
       restaurants: [],
-      state3: "",
+      restaurantsall: [],
       value8: "",
       form: {
         bookingtype: "2",
@@ -384,18 +341,7 @@ export default {
 
         hotelinfo: [{ hoteloption: "0", roomcount: 1 }],
 
-        traveluser: [{ staffname: "" }],
-
-        name: "",
-        region: "",
-        date1: "",
-        date2: "",
-        delivery: true,
-        type: ["步步高"],
-
-        desc: "",
-        options: [],
-        returndate: false
+        traveluser: [{ staffname: "" }]
       },
       airshow: true,
       hotelshow: true,
@@ -468,23 +414,77 @@ export default {
     },
     querySearch(query) {
       if (query !== "") {
-        this.restaurants = this.loadAll().filter(item => {
-          return item.pinyin.toLowerCase().indexOf(query.toLowerCase()) > -1
-          || item.city.toLowerCase().indexOf(query.toLowerCase()) > -1;
+        this.restaurants = this.restaurantsall.filter(item => {
+          return (
+            item.City_PinYin.toLowerCase().indexOf(query.toLowerCase()) > -1 ||
+            item.City_Name.toLowerCase().indexOf(query.toLowerCase()) > -1
+          );
         });
       } else {
-        this.restaurants = this.loadAll();
+        this.restaurants = this.restaurantsall;
       }
     },
     loadAll() {
-      return [
-        { city: "北京", pinyin: "beijing", value: "bjs" },
-        { city: "上海", pinyin: "shanghai", value: "sha" }
-      ];
+      this.$http
+        .post("/api/Boss/GetT_AirPortsList", Service.Encrypt.DataEncryption({}))
+        .then(
+          response => {
+            if (
+              response.data.Data &&
+              response.data.Data != null &&
+              response.data.Data != undefined
+            ) {
+              if (response.data.Status == 100) {
+                this.restaurantsall = response.data.Data;
+                this.restaurants = response.data.Data;
+              } else {
+                this.restaurantsall = [];
+              }
+            } else {
+              this.restaurantsall = [];
+            }
+          },
+          error => {
+            this.$message("请求失败！");
+            console.log(error);
+          }
+        );
+    },
+    loadstafflist() {
+      this.$http
+        .post(
+          "/api/Enterprise/GetStaffList",
+          Service.Encrypt.DataEncryption({
+            EnterpriseId: this.user.EnterpriseId
+          })
+        )
+        .then(
+          response => {
+            if (
+              response.data.Data &&
+              response.data.Data != null &&
+              response.data.Data != undefined
+            ) {
+              if (response.data.Status == 100) {
+                this.staffoptions = response.data.Data;
+              } else {
+                this.staffoptions = [];
+              }
+            } else {
+              this.staffoptions = [];
+            }
+          },
+          error => {
+            this.$message("请求失败！");
+            console.log(error);
+          }
+        );
     }
   },
   mounted() {
-    this.restaurants = this.loadAll();
+    this.user = JSON.parse(localStorage.getItem("ms_username"));
+    this.loadAll();
+    this.loadstafflist();
   }
 };
 </script>
