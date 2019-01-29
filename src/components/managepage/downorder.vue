@@ -93,16 +93,16 @@
             <el-form-item label="行程城市">
               <el-col :span="8">
                 <el-select
-                  v-model="departcity"
+                  v-model="form.departcity"
                   filterable
-                  :filter-method="querySearch"
+                  :filter-method="querydSearch"
                   placeholder="出发城市/汉字/全拼"
                 >
                   <el-option
-                    v-for="item in restaurants"
-                    :key="item.City_PinYin"
+                    v-for="item in departcitys"
+                    :key="item.City_Code"
                     :label="item.City_Name"
-                    :value="item.City_PinYin"
+                    :value="item.City_Name"
                   ></el-option>
                 </el-select>
               </el-col>
@@ -111,16 +111,16 @@
               </el-col>
               <el-col :span="8">
                 <el-select
-                  v-model="arrivecity"
+                  v-model="form.arrivecity"
                   filterable
-                  :filter-method="querySearch"
+                  :filter-method="queryaSearch"
                   placeholder="到达城市/汉字/全拼"
                 >
                   <el-option
-                    v-for="item in restaurants"
-                    :key="item.City_PinYin"
+                    v-for="item in arrivecitys"
+                    :key="item.City_Code"
                     :label="item.City_Name"
-                    :value="item.City_PinYin"
+                    :value="item.City_Name"
                   ></el-option>
                 </el-select>
               </el-col>
@@ -206,7 +206,7 @@
             </el-form-item>
 
             <el-form-item
-              v-for="(domain, index) in dynamicHValidateForm.domains"
+              v-for="(domain, index) in dynamicHValidateForm.Apartment"
               :label="'房型' + (index+1)"
               :key="domain.key"
               :prop="'domains.' + index + '.value'"
@@ -216,7 +216,7 @@
             >
               <el-row>
                 <el-col :span="5">
-                  <el-select v-model="domain.value" placeholder="选择房型">
+                  <el-select v-model="domain.ApartmentType" placeholder="选择房型">
                     <el-option
                       v-for="item in hoteloptions"
                       :key="item.value"
@@ -226,7 +226,7 @@
                   </el-select>
                 </el-col>
                 <el-col :span="2" :offset="1">
-                  <el-input v-model="domain.count"></el-input>
+                  <el-input v-model="domain.Apartmentcount"></el-input>
                 </el-col>
                 <el-col :span="2">间</el-col>
                 <el-col :span="2">
@@ -247,20 +247,20 @@
             >添加出行人</el-button>
           </el-form-item>
           <el-form-item
-            v-for="(domain, index) in dynamicValidateForm.domains"
+            v-for="(domain, index) in dynamicValidateForm.Passenger"
             :label="'出行人' + (index+1)"
             :key="domain.key"
-            :prop="'domains.' + index + '.value'"
+            :prop="'Passenger.' + index + '.PassengerName'"
             :rules="{
       required: true, message: '出行人不能为空', trigger: 'blur'
     }"
           >
-            <el-select v-model="domain.value" placeholder="选择出行人">
+            <el-select v-model="domain.PassengerName" placeholder="选择出行人">
               <el-option
                 v-for="item in staffoptions"
                 :key="item.StaffId"
                 :label="item.StaffName"
-                :value="item.StaffId"
+                :value="item.StaffName"
               ></el-option>
             </el-select>
 
@@ -297,17 +297,17 @@ export default {
       ],
       staffoptions: [],
       dynamicValidateForm: {
-        domains: [
+        Passenger: [
           {
-            value: ""
+            PassengerName: ""
           }
         ]
       },
       dynamicHValidateForm: {
-        domains: [
+        Apartment: [
           {
-            value: "0",
-            count: 1
+            ApartmentType: "0",
+            Apartmentcount: 1
           }
         ]
       },
@@ -317,7 +317,8 @@ export default {
         { value: "2", label: "豪华大床" },
         { value: "3", label: "豪华套件" }
       ],
-      restaurants: [],
+      departcitys: [],
+      arrivecitys:[],
       restaurantsall: [],
       value8: "",
       form: {
@@ -338,20 +339,13 @@ export default {
         destination: "",
         hotellocation: "0",
         hotelothers: "",
-
-        hotelinfo: [{ hoteloption: "0", roomcount: 1 }],
-
-        traveluser: [{ staffname: "" }]
-      },
+},
       airshow: true,
       hotelshow: true,
       destinationshow: false
     };
   },
   methods: {
-    onSubmit() {
-      this.$message.success("提交成功！");
-    },
     onTravelTypeClick(type) {
       if (type == 1) {
         this.form.returndate = false;
@@ -372,27 +366,27 @@ export default {
       }
     },
     addDomain() {
-      this.dynamicValidateForm.domains.push({
+      this.dynamicValidateForm.Passenger.push({
         value: "",
         key: Date.now()
       });
     },
     removeDomain(item) {
-      var index = this.dynamicValidateForm.domains.indexOf(item);
+      var index = this.dynamicValidateForm.Passenger.indexOf(item);
       if (index !== -1) {
-        this.dynamicValidateForm.domains.splice(index, 1);
+        this.dynamicValidateForm.Passenger.splice(index, 1);
       }
     },
     addHDomain() {
-      this.dynamicHValidateForm.domains.push({
+      this.dynamicHValidateForm.Apartment.push({
         value: "",
         key: Date.now()
       });
     },
     removeHDomain(item) {
-      var index = this.dynamicHValidateForm.domains.indexOf(item);
+      var index = this.dynamicHValidateForm.Apartment.indexOf(item);
       if (index !== -1) {
-        this.dynamicHValidateForm.domains.splice(index, 1);
+        this.dynamicHValidateForm.Apartment.splice(index, 1);
       }
     },
     changedepartdate() {
@@ -410,18 +404,80 @@ export default {
     },
     onSubmit() {
       debugger;
-      var tishi = dynamicHValidateForm;
+      var list = this.dynamicValidateForm;
+      this.$http
+        .post(
+          "/api/Enterprise/GenerateOrder",
+          Service.Encrypt.DataEncryption({
+            BookingType:form.bookingtype,
+            TravelType:form.traveltype,
+            DepartDate:form.departdate,
+            ArriveDate:form.arrivedate,
+            DepartCity:form.departcity,
+            ArriveCity:form.arrivecity,
+            TravelWay:form.travelway,
+            ExpectDepartTime:form.expectdeparttime,
+            ExpectArrivetime:form.expectarrivetime,
+            TravelOthers:form.travelothers,
+
+            HotelCheckinDate:form.hotelcheckindate,
+            HotelCheckoutDate:form.hotelcheckoutdate,
+            HotelType:form.hoteltype,
+            Destination:form.destination,
+            HotelLocation:form.hotellocation,
+            HotelOthers:form.hotelothers,
+            
+            Passengers: this.dynamicValidateForm.Passenger,
+            Apartments:this.dynamicHValidateForm.Apartment,
+
+            EnterpriseId:this.user.EnterpriseId,
+            StaffId:this.user.StaffId
+          })
+        )
+        .then(
+          response => {
+            if (
+              response.data.Data &&
+              response.data.Data != null &&
+              response.data.Data != undefined
+            ) {
+              if (response.data.Status == 100) {
+                this.$message.success("提交成功");
+              } else {
+                this.$message.success("提交失败");
+              }
+            } else {
+              this.$message.success("提交失败");
+            }
+          },
+          error => {
+            this.$message("请求失败！");
+            console.log(error);
+          }
+        );
     },
-    querySearch(query) {
+    querydSearch(query) {
       if (query !== "") {
-        this.restaurants = this.restaurantsall.filter(item => {
+        this.departcitys = this.restaurantsall.filter(item => {
           return (
             item.City_PinYin.toLowerCase().indexOf(query.toLowerCase()) > -1 ||
             item.City_Name.toLowerCase().indexOf(query.toLowerCase()) > -1
           );
         });
       } else {
-        this.restaurants = this.restaurantsall;
+        this.departcitys = this.restaurantsall;
+      }
+    },
+    queryaSearch(query) {
+      if (query !== "") {
+        this.arrivecity = this.restaurantsall.filter(item => {
+          return (
+            item.City_PinYin.toLowerCase().indexOf(query.toLowerCase()) > -1 ||
+            item.City_Name.toLowerCase().indexOf(query.toLowerCase()) > -1
+          );
+        });
+      } else {
+        this.arrivecity = this.restaurantsall;
       }
     },
     loadAll() {
@@ -436,7 +492,8 @@ export default {
             ) {
               if (response.data.Status == 100) {
                 this.restaurantsall = response.data.Data;
-                this.restaurants = response.data.Data;
+                this.departcitys = response.data.Data;
+                this.arrivecitys = response.data.Data;
               } else {
                 this.restaurantsall = [];
               }
