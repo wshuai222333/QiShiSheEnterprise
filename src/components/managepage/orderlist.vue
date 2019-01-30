@@ -13,47 +13,42 @@
         <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
         <el-button type="primary" icon="search" @click="search">搜索</el-button>
       </div>
-      <el-table
-        :data="data"
-        border
-        class="table"
-        ref="multipleTable"
-        @selection-change="handleSelectionChange"
-      >
-        <el-table-column prop="date" label="订单号"></el-table-column>
-        <el-table-column prop="name" label="预定类型"></el-table-column>
-        <el-table-column prop="name" label="出发日期"></el-table-column>
-        <el-table-column prop="name" label="出发城市"></el-table-column>
-        <el-table-column prop="name" label="到达日期"></el-table-column>
-        <el-table-column prop="name" label="到底城市"></el-table-column>
-        <el-table-column prop="name" label="交通方式"></el-table-column>
-        <el-table-column prop="name" label="入住日期"></el-table-column>
-        <el-table-column prop="name" label="离店日期"></el-table-column>
-        <el-table-column prop="name" label="酒店类型"></el-table-column>
-        <el-table-column prop="name" label="期待位置"></el-table-column>
-        <el-table-column prop="name" label="订单状态"></el-table-column>
-        <el-table-column label="操作" width="180" align="center">
+      <el-table :data="tableData" border class="table" ref="multipleTable">
+        <el-table-column prop="OrderId" label="订单号"></el-table-column>
+        <el-table-column prop="BookingType" label="预定类型" :formatter="formatterbookingtype"></el-table-column>
+        <el-table-column prop="DepartDate" label="出发日期"></el-table-column>
+        <el-table-column prop="DepartCity" label="出发城市"></el-table-column>
+        <el-table-column prop="ArriveDate" label="到达日期"></el-table-column>
+        <el-table-column prop="ArriveCity" label="到底城市"></el-table-column>
+        <el-table-column prop="TravelWay" label="交通方式" :formatter="formattertravelway"></el-table-column>
+        <el-table-column prop="HotelCheckinDate" label="入住日期"></el-table-column>
+        <el-table-column prop="HotelCheckoutDate" label="离店日期"></el-table-column>
+        <el-table-column prop="HotelType" label="酒店类型" :formatter="formatterhoteltype"></el-table-column>
+        <el-table-column prop="HotelLocation" label="期待位置" :formatter="formatterhotellocation"></el-table-column>
+        <el-table-column prop="Status" label="订单状态" width="120">
+          <template slot-scope="scope">
+            <el-tag v-if="scope.row.Status==0">等待确认需求</el-tag>
+            <el-tag type="danger" v-if="scope.row.Status==1">等待员工确认</el-tag>
+            <el-tag type="success" v-if="scope.row.Status==3">确认完成</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="120" align="center">
           <template slot-scope="scope">
             <el-button
               type="text"
               icon="el-icon-edit"
               @click="handleEdit(scope.$index, scope.row)"
-            >编辑</el-button>
-            <el-button
-              type="text"
-              icon="el-icon-delete"
-              class="red"
-              @click="handleDelete(scope.$index, scope.row)"
-            >删除</el-button>
+            >确认详情</el-button>
           </template>
         </el-table-column>
       </el-table>
       <div class="pagination">
         <el-pagination
           background
+          layout="total,prev, pager, next"
+          :total="total"
+          :current-page="currentPage"
           @current-change="handleCurrentChange"
-          layout="prev, pager, next"
-          :total="1000"
         ></el-pagination>
       </div>
     </div>
@@ -95,6 +90,8 @@
 </template>
 
 <script>
+import Service from "../../_common";
+
 export default {
   name: "basetable",
   data() {
@@ -114,41 +111,104 @@ export default {
         date: "",
         address: ""
       },
-      idx: -1
+      idx: -1,
+      currentPage: 1,
+      user: null,
+      total: 0
     };
   },
 
   created() {
     this.getData();
   },
-
-  computed: {
-    data() {
-      return this.tableData.filter(d => {
-        let is_del = false;
-        for (let i = 0; i < this.del_list.length; i++) {
-          if (d.name === this.del_list[i].name) {
-            is_del = true;
-            break;
-          }
-        }
-        if (!is_del) {
-          if (
-            d.address.indexOf(this.select_cate) > -1 &&
-            (d.name.indexOf(this.select_word) > -1 ||
-              d.address.indexOf(this.select_word) > -1)
-          ) {
-            return d;
-          }
-        }
-      });
-    }
-  },
   methods: {
+    formatterbookingtype(row, column) {
+      var msg = "";
+      switch (parseInt(row.BookingType)) {
+        case 0:
+          msg = "机票/火车票";
+          break;
+        case 1:
+          msg = "酒店";
+          break;
+        case 2:
+          msg = "机票/火车票&&酒店";
+          break;
+        default:
+          msg = "未知";
+          break;
+      }
+      return msg;
+    },
+    formattertravelway(row, column) {
+      var msg = "";
+      switch (parseInt(row.TravelWay)) {
+        case 0:
+          msg = "飞机";
+          break;
+        case 1:
+          msg = "火车";
+          break;
+        default:
+          msg = "未知";
+          break;
+      }
+      return msg;
+    },
+    formatterhoteltype(row, column) {
+      var msg = "";
+      switch (parseInt(row.HotelType)) {
+        case 0:
+          msg = "立即支付";
+          break;
+        case 1:
+          msg = "到店支付";
+          break;
+        default:
+          msg = "未知";
+          break;
+      }
+      return msg;
+    },
+    formatterhotellocation(row, column) {
+      var msg = "";
+      switch (parseInt(row.HotelLocation)) {
+        case 0:
+          msg = "系统默认";
+          break;
+        case 1:
+          msg = "目的地";
+          break;
+        case 2:
+          msg = "机场/车站";
+          break;
+        default:
+          msg = "未知";
+          break;
+      }
+      return msg;
+    },
+    formatterstatus(row, column) {
+      var msg = "";
+      switch (parseInt(row.Status)) {
+        case 0:
+          msg = "等待确认";
+          break;
+        case 1:
+          msg = "支付成功";
+          break;
+        case 2:
+          msg = "确认成功";
+          break;
+        default:
+          msg = "未知";
+          break;
+      }
+      return msg;
+    },
     // 分页导航
     handleCurrentChange(val) {
-      this.cur_page = val;
-      this.getData();
+      this.onQueryClick(val);
     },
     // 获取 easy-mock 的模拟数据
     getData() {
@@ -213,7 +273,46 @@ export default {
       this.tableData.splice(this.idx, 1);
       this.$message.success("删除成功");
       this.delVisible = false;
+    },
+    //查询
+    onQueryClick: function(pageindex) {
+      this.currentPage = pageindex;
+      this.$http
+        .post(
+          "/api/Enterprise/GetDemandOrderList",
+          Service.Encrypt.DataEncryption({
+            EnterpriseId: this.user.EnterpriseId,
+            pageindex: pageindex,
+            pagesize: 10
+          })
+        )
+        .then(
+          response => {
+            if (
+              response.data.Data &&
+              response.data.Data != null &&
+              response.data.Data != undefined
+            ) {
+              if (response.data.Status == 100) {
+                this.total = response.data.Data.TotalItems;
+                this.tableData = response.data.Data.Items;
+              } else {
+                this.$message(response.Message);
+              }
+            } else {
+              this.$message(response.Message);
+            }
+          },
+          error => {
+            this.$message(error);
+            console.log(error);
+          }
+        );
     }
+  },
+  mounted() {
+    this.user = JSON.parse(localStorage.getItem("ms_username"));
+    this.onQueryClick(1);
   }
 };
 </script>

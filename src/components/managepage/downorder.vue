@@ -52,10 +52,10 @@
                 <el-col :span="11">
                   <el-select v-model="form.expectdeparttime" placeholder="期望时间段">
                     <el-option
-                      v-for="item in expecttraveltime"
+                      v-for="item in expecttraveltimes"
                       :key="item.value"
                       :label="item.label"
-                      :value="item.value"
+                      :value="item.label"
                     ></el-option>
                   </el-select>
                 </el-col>
@@ -76,15 +76,15 @@
                 </el-col>
                 <el-col :span="11">
                   <el-select
-                    v-model="form.expecttraveltime"
+                    v-model="form.expectarrivetime"
                     :disabled="form.returndate"
                     placeholder="期望时间段"
                   >
                     <el-option
-                      v-for="item in expecttraveltime"
+                      v-for="item in expecttraveltimes"
                       :key="item.value"
                       :label="item.label"
-                      :value="item.value"
+                      :value="item.label"
                     ></el-option>
                   </el-select>
                 </el-col>
@@ -284,7 +284,7 @@ export default {
   data: function() {
     return {
       user: null,
-      expecttraveltime: [
+      expecttraveltimes: [
         { value: "0", label: "06:00-08:00" },
         { value: "1", label: "08:00-10:00" },
         { value: "3", label: "10:00-12:00" },
@@ -409,23 +409,23 @@ export default {
         .post(
           "/api/Enterprise/GenerateOrder",
           Service.Encrypt.DataEncryption({
-            BookingType:form.bookingtype,
-            TravelType:form.traveltype,
-            DepartDate:form.departdate,
-            ArriveDate:form.arrivedate,
-            DepartCity:form.departcity,
-            ArriveCity:form.arrivecity,
-            TravelWay:form.travelway,
-            ExpectDepartTime:form.expectdeparttime,
-            ExpectArrivetime:form.expectarrivetime,
-            TravelOthers:form.travelothers,
+            BookingType:this.form.bookingtype,
+            TravelType:this.form.traveltype,
+            DepartDate:this.form.departdate,
+            ArriveDate:this.form.arrivedate,
+            DepartCity:this.form.departcity,
+            ArriveCity:this.form.arrivecity,
+            TravelWay:this.form.travelway,
+            ExpectDepartTime:this.form.expectdeparttime,
+            ExpectArrivetime:this.form.expectarrivetime,
+            TravelOthers:this.form.travelothers,
 
-            HotelCheckinDate:form.hotelcheckindate,
-            HotelCheckoutDate:form.hotelcheckoutdate,
-            HotelType:form.hoteltype,
-            Destination:form.destination,
-            HotelLocation:form.hotellocation,
-            HotelOthers:form.hotelothers,
+            HotelCheckinDate:this.form.hotelcheckindate,
+            HotelCheckoutDate:this.form.hotelcheckoutdate,
+            HotelType:this.form.hoteltype,
+            Destination:this.form.destination,
+            HotelLocation:this.form.hotellocation,
+            HotelOthers:this.form.hotelothers,
             
             Passengers: this.dynamicValidateForm.Passenger,
             Apartments:this.dynamicHValidateForm.Apartment,

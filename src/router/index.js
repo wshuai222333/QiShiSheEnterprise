@@ -97,6 +97,11 @@ export default new Router({
                     path: '/confirmorder',
                     component: resolve => require(['../components/managepage/confirmorder.vue'], resolve),
                     meta: { title: '确认订单' }
+                }, ,
+                {
+                    path: '/waitconfirmtishi',
+                    component: resolve => require(['../components/managepage/waitconfirmtishi.vue'], resolve),
+                    meta: { title: '等待确认' }
                 }
             ]
         },

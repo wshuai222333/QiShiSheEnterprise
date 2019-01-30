@@ -63,6 +63,10 @@
                              {
                                 index: 'confirmorder',
                                 title: '确认订单'
+                            },
+                             {
+                                index: 'waitconfirmtishi',
+                                title: '提示页'
                             }
                             
                         ]
