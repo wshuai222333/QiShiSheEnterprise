@@ -188,24 +188,7 @@ export default {
       }
       return msg;
     },
-    formatterstatus(row, column) {
-      var msg = "";
-      switch (parseInt(row.Status)) {
-        case 0:
-          msg = "等待确认";
-          break;
-        case 1:
-          msg = "支付成功";
-          break;
-        case 2:
-          msg = "确认成功";
-          break;
-        default:
-          msg = "未知";
-          break;
-      }
-      return msg;
-    },
+  
     // 分页导航
     handleCurrentChange(val) {
       this.onQueryClick(val);
