@@ -20,16 +20,17 @@
         <el-table-column prop="DepartCity" label="出发城市"></el-table-column>
         <el-table-column prop="ArriveDate" label="到达日期"></el-table-column>
         <el-table-column prop="ArriveCity" label="到底城市"></el-table-column>
-        <el-table-column prop="TravelWay" label="交通方式" :formatter="formattertravelway"></el-table-column>
+        <el-table-column prop="TravelWay" label="行程方式" :formatter="formattertravelway"></el-table-column>
         <el-table-column prop="HotelCheckinDate" label="入住日期"></el-table-column>
         <el-table-column prop="HotelCheckoutDate" label="离店日期"></el-table-column>
         <el-table-column prop="HotelType" label="酒店类型" :formatter="formatterhoteltype"></el-table-column>
         <el-table-column prop="HotelLocation" label="期待位置" :formatter="formatterhotellocation"></el-table-column>
         <el-table-column prop="Status" label="订单状态" width="120">
           <template slot-scope="scope">
-            <el-tag v-if="scope.row.Status==0">等待确认需求</el-tag>
-            <el-tag type="danger" v-if="scope.row.Status==1">等待员工确认</el-tag>
-            <el-tag type="success" v-if="scope.row.Status==3">确认完成</el-tag>
+            <el-tag v-if="scope.row.Status==0">行程生成中</el-tag>
+            <el-tag type="danger" v-if="scope.row.Status==1">待用户确认</el-tag>
+            <el-tag type="warning" v-if="scope.row.Status==3">行程采购中</el-tag>
+            <el-tag type="success" v-if="scope.row.Status==5">已完成</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="120" align="center">
@@ -188,7 +189,7 @@ export default {
       }
       return msg;
     },
-  
+
     // 分页导航
     handleCurrentChange(val) {
       this.onQueryClick(val);
@@ -277,6 +278,7 @@ export default {
               response.data.Data != undefined
             ) {
               if (response.data.Status == 100) {
+                debugger;
                 this.total = response.data.Data.TotalItems;
                 this.tableData = response.data.Data.Items;
               } else {
