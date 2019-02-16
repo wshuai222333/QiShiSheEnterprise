@@ -86,6 +86,8 @@
         <el-button type="primary" @click="deleteRow">确 定</el-button>
       </span>
     </el-dialog>
+
+   
   </div>
 </template>
 
@@ -114,7 +116,8 @@ export default {
       idx: -1,
       currentPage: 1,
       user: null,
-      total: 0
+      total: 0,
+      ordertailVisible:false
     };
   },
 
@@ -188,7 +191,7 @@ export default {
       }
       return msg;
     },
-  
+
     // 分页导航
     handleCurrentChange(val) {
       this.onQueryClick(val);
@@ -218,14 +221,15 @@ export default {
       return row.tag === value;
     },
     handleEdit(index, row) {
-      this.idx = index;
-      const item = this.tableData[index];
-      this.form = {
-        name: item.name,
-        date: item.date,
-        address: item.address
-      };
-      this.editVisible = true;
+      // this.idx = index;
+      // const item = this.tableData[index];
+      // this.form = {
+      //   name: item.name,
+      //   date: item.date,
+      //   address: item.address
+      // };
+      // this.editVisible = true;
+      this.ordertailVisible = true;
     },
     handleDelete(index, row) {
       this.idx = index;
