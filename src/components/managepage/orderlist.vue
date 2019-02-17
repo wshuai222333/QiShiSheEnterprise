@@ -52,7 +52,13 @@
 
     <el-dialog title="订单详情" :visible.sync="ordertailVisible" width="80%" top="20px" center>
       <div class="container">
-        <el-steps :active="2" style="width:100%">
+        <el-steps :active="2" style="width:100%" v-if="form.status!=5">
+          <el-step title="填单" description="填写行程需求单"></el-step>
+          <el-step title="确认" description="确认具体行程"></el-step>
+          <el-step title="出行" description="行程制定成功"></el-step>
+        </el-steps>
+
+        <el-steps :active="3" style="width:100%" v-if="form.status==5">
           <el-step title="填单" description="填写行程需求单"></el-step>
           <el-step title="确认" description="确认具体行程"></el-step>
           <el-step title="出行" description="行程制定成功"></el-step>
@@ -63,7 +69,7 @@
         <el-card class="box-card" style="width:100%">
           <div slot="header" class="clearfix">
             <span>机票信息</span>
-            <el-button style="float: right; padding: 3px 0" type="text" @click="openselectair">更改航班</el-button>
+            <el-button v-if="form.status==1" style="float: right; padding: 3px 0" type="text" @click="openselectair">更改航班</el-button>
           </div>
           <div>
             <el-table :data="tableDataairtop">
@@ -102,10 +108,11 @@
           <div slot="header" class="clearfix">
             <span>火车票信息</span>
             <el-button
+              v-if="form.status==1"
               style="float: right; padding: 3px 0"
               type="text"
               @click="openselecttrain"
-            >添加火车票</el-button>
+            >更改车次</el-button>
           </div>
           <div>
             <el-table :data="tableDataTrainTop">
@@ -137,6 +144,69 @@
         </el-card>
 
         <p style="height:5px;"></p>
+
+        <!--酒店信息-->
+        <el-card class="box-card" style="width:100%">
+          <div slot="header" class="clearfix">
+            <span>酒店信息</span>
+            <span style="font-size: 12px;padding-left:100px">入住时间：{{this.form.hotelCheckinDate}}</span>
+            <span style="font-size: 12px;padding-left:100px">离店时间：{{this.form.hotelCheckoutDate}}</span>
+            <el-button
+              v-if="form.status==1"
+              style="float: right; padding: 3px 0"
+              type="text"
+              @click="openselecthotel"
+            >更改酒店</el-button>
+          </div>
+          <div>
+            <el-table :data="tableDataHotelTop" style="width:100%">
+              <el-table-column prop="HotelName" label="酒店名称"></el-table-column>
+              <el-table-column prop="HotelAddress" label="酒店地址"></el-table-column>
+              <el-table-column label>
+                <template slot-scope="scope">
+                  <el-popover
+                    placement="top-start"
+                    title="酒店规定"
+                    width="200"
+                    trigger="hover"
+                    content="酒店规定"
+                  >
+                    <el-button slot="reference">酒店规定</el-button>
+                  </el-popover>
+                </template>
+              </el-table-column>
+            </el-table>
+            <el-table :data="tableDataRooms" style="width:100%">
+              <el-table-column prop="ApartmentType" label="房间类型" :formatter="formatterroomtype"></el-table-column>
+              <el-table-column prop="Apartmentcount" label="房间数量"></el-table-column>
+            </el-table>
+          </div>
+          <div class="price">
+            <span class="price-subtotal">小计:{{hotelTotalPrice}}</span>
+          </div>
+        </el-card>
+
+        <!--出行人信息-->
+        <p style="height:5px;"></p>
+        <el-card class="box-card" style="width:100%">
+          <div slot="header" class="clearfix">
+            <span>出行人信息</span>
+          </div>
+          <div>
+            <el-table :data="tableDataPass" style="width:100%">
+              <el-table-column prop="PassengerName" label="姓名"></el-table-column>
+              <el-table-column prop="PassengerCardNo" label="证件号"></el-table-column>
+            </el-table>
+          </div>
+          <div class="price">
+            <strong class="price-subtotal">总计:{{showTotalPrice}}</strong>
+          </div>
+        </el-card>
+
+        <p style="height:10px;"></p>
+        <el-row v-if="form.status==1">
+          <el-button type="primary" @click="submitOrderTravel">确认行程</el-button>
+        </el-row>
       </div>
 
       <!--更改航班弹窗-->
@@ -184,6 +254,24 @@
           <el-button type="primary" @click="clickSelectTrain">确 定</el-button>
         </div>
       </el-dialog>
+      <!--更改酒店弹窗-->
+      <el-dialog title="更改航班" :visible.sync="hotelinnerVisible" append-to-body>
+        <el-table
+          ref="singleTable"
+          :data="tableDataHotel"
+          highlight-current-row
+          @current-change="handleCurrentChangeHotel"
+          style="width: 100%"
+        >
+          <el-table-column prop="HotelName" label="酒店名称"></el-table-column>
+          <el-table-column prop="HotelAddress" label="酒店地址"></el-table-column>
+          <el-table-column prop="TotalPrice" label="房间总价"></el-table-column>
+        </el-table>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="hotelinnerVisible = false">取 消</el-button>
+          <el-button type="primary" @click="clickSelectHotel">确 定</el-button>
+        </div>
+      </el-dialog>
     </el-dialog>
   </div>
 </template>
@@ -203,22 +291,13 @@ export default {
       ordertailVisible: false,
       airinnerVisible: false,
       traininnerVisible: false,
+      hotelinnerVisible: false,
       form: {
-        orderId: ""
-      },
-      airform: {
-        onedepartdate: "暂无",
-        twodepartdate: "暂无",
-        departcity: "暂无",
-        onearrivedate: "暂无",
-        twoarrivedate: "暂无",
-        arrivecity: "暂无",
-        onefightno: "暂无",
-        twofightno: "暂无",
-        seattype: "暂无",
-        traveltype: "暂无",
-        ticketprice: "",
-        fuelprice: ""
+        orderId: "",
+        hotelCheckinDate: "",
+        hotelCheckoutDate: "",
+        status: "",
+        totalPrice:""
       },
       tableDataairtop: [],
       showTicketPrice: "",
@@ -228,7 +307,14 @@ export default {
       tableDataTrainTop: [],
       tableDataTrain: [],
       showtrainprice: "",
-      traincurrentRow: null
+      traincurrentRow: null,
+      tableDataHotelTop: [],
+      tableDataHotel: [],
+      tableDataRooms: [],
+      hotelTotalPrice: "",
+      hotelcurrentRow: null,
+      tableDataPass: [],
+      showTotalPrice: ""
     };
   },
 
@@ -365,6 +451,27 @@ export default {
       }
       return msg;
     },
+    formatterroomtype(row, column) {
+      var msg = "";
+      switch (parseInt(row.ApartmentType)) {
+        case 0:
+          msg = "双人标间";
+          break;
+        case 1:
+          msg = "商务大床";
+          break;
+        case 2:
+          msg = "豪华大床";
+          break;
+        case 3:
+          msg = "豪华套件";
+          break;
+        default:
+          msg = "未知";
+          break;
+      }
+      return msg;
+    },
     // 分页导航
     handleCurrentChange(val) {
       this.onQueryClick(val);
@@ -425,9 +532,36 @@ export default {
     onClickOrderDetail(order) {
       this.ordertailVisible = true;
       this.form.orderId = order.OrderId;
+      this.form.hotelCheckinDate = order.HotelCheckinDate;
+      this.form.hotelCheckoutDate = order.HotelCheckoutDate;
+      this.form.status = order.Status;
+      this.form.totalPrice = order.TotalPrice;
 
+      this.showTicketPrice="";
+      this.showFuelPrice="";
+      this.showtrainprice="";
+      this.hotelTotalPrice="";
+      this.showTotalPrice="";
+
+      this.getGetOrderApartmentList();
+      this.getOrderPassengerlist();
+      
+
+      if(this.form.status==1){
       this.getselectairlist();
       this.getselecttrainlist();
+      this.getselecthotellist();
+      this.showTotalPrice =
+                  this.showTicketPrice + this.showFuelPrice
+                  this.hotelTotalPrice;
+      }
+      else{
+       this.getGetOrderAirTicketList();
+       this.getGetOrderTrainTicketList();
+       this.getGetOrderHotelList();
+       this.showTotalPrice =this.form.totalPrice;
+      }
+     
     },
     //获取选择航班
     getselectairlist() {
@@ -447,9 +581,11 @@ export default {
             ) {
               if (response.data.Status == 100) {
                 this.tableDataair = response.data.Data;
-                this.tableDataairtop.push(response.data.Data[0]);
-                this.showTicketPrice = response.data.Data[0].TicketPrice;
-                this.showFuelPrice = response.data.Data[0].FuelPrice;
+                if (this.tableDataairtop.length == 0) {
+                  this.tableDataairtop.push(response.data.Data[0]);
+                  this.showTicketPrice = response.data.Data[0].TicketPrice;
+                  this.showFuelPrice = response.data.Data[0].FuelPrice;
+                }
               } else {
                 this.$message(response.Message);
               }
@@ -489,7 +625,7 @@ export default {
         )
         .then(
           response => {
-            debugger;
+            
             if (
               response.data.Data &&
               response.data.Data != null &&
@@ -497,8 +633,10 @@ export default {
             ) {
               if (response.data.Status == 100) {
                 this.tableDataTrain = response.data.Data;
-                this.tableDataTrainTop.push(response.data.Data[0]);
-                this.showtrainprice = response.data.Data[0].TicketPrice;
+                if (this.tableDataTrainTop == 0) {
+                  this.tableDataTrainTop.push(response.data.Data[0]);
+                  this.showtrainprice = response.data.Data[0].TicketPrice;
+                }
               } else {
                 this.$message(response.Message);
               }
@@ -524,7 +662,254 @@ export default {
       this.tableDataTrainTop = list;
       this.showtrainprice = this.traincurrentRow.TicketPrice;
       this.traininnerVisible = false;
-    }
+    },
+    //获取选择酒店
+    getselecthotellist() {
+      this.$http
+        .post(
+          "/api/Boss/GetSelectHotelList",
+          Service.Encrypt.DataEncryption({
+            OrderId: this.form.orderId
+          })
+        )
+        .then(
+          response => {
+            if (
+              response.data.Data &&
+              response.data.Data != null &&
+              response.data.Data != undefined
+            ) {
+              if (response.data.Status == 100) {
+                this.tableDataHotel = response.data.Data;
+                if (this.tableDataHotelTop.length == 0) {
+                  this.tableDataHotelTop.push(response.data.Data[0]);
+                  this.hotelTotalPrice = response.data.Data[0].TotalPrice;
+                }
+              } else {
+                this.$message(response.Message);
+              }
+            } else {
+              this.$message(response.Message);
+            }
+          },
+          error => {
+            this.$message(error);
+            console.log(error);
+          }
+        );
+    },
+    openselecthotel() {
+      this.hotelinnerVisible = true;
+    },
+    handleCurrentChangeHotel(val) {
+      this.hotelcurrentRow = val;
+    },
+    clickSelectHotel() {
+      var list = [];
+      list.push(this.hotelcurrentRow);
+      this.tableDataHotelTop = list;
+      this.hotelTotalPrice = this.hotelcurrentRow.TotalPrice;
+      this.hotelinnerVisible = false;
+    },
+    //获取房型数量
+    getGetOrderApartmentList() {
+      this.$http
+        .post(
+          "/api/Boss/GetOrderApartmentList",
+          Service.Encrypt.DataEncryption({
+            OrderId: this.form.orderId
+          })
+        )
+        .then(
+          response => {
+            if (
+              response.data.Data &&
+              response.data.Data != null &&
+              response.data.Data != undefined
+            ) {
+              if (response.data.Status == 100) {
+                this.tableDataRooms = response.data.Data;
+              } else {
+                this.$message(response.data.Message);
+              }
+            } else {
+              this.$message(response.data.Message);
+            }
+          },
+          error => {
+            this.$message(error);
+            console.log(error);
+          }
+        );
+    },
+    //获取出行人
+    getOrderPassengerlist() {
+      this.$http
+        .post(
+          "/api/Boss/GetOrderPassengerList",
+          Service.Encrypt.DataEncryption({
+            OrderId: this.form.orderId
+          })
+        )
+        .then(
+          response => {
+            if (
+              response.data.Data &&
+              response.data.Data != null &&
+              response.data.Data != undefined
+            ) {
+              if (response.data.Status == 100) {
+                this.tableDataPass = response.data.Data;
+               
+              } else {
+                this.$message(response.data.Message);
+              }
+            } else {
+              this.$message(response.data.Message);
+            }
+          },
+          error => {
+            this.$message(error);
+            console.log(error);
+          }
+        );
+    },
+    //确认行程订单
+    submitOrderTravel() {
+      debugger;
+      this.$http
+        .post(
+          "/api/Enterprise/ConfirmOrder",
+          Service.Encrypt.DataEncryption({
+            OrderId: this.form.orderId,
+            SelectAirTicketId:this.tableDataairtop[0].SelectAirTicketId,
+            SelectTrainTicketId:this.tableDataTrainTop[0].SelectTrainTicketId,
+            SelectHotelId:this.tableDataHotelTop[0].SelectHotelId,
+          })
+        )
+        .then(
+          response => {
+            if (
+              response.data.Data &&
+              response.data.Data != null &&
+              response.data.Data != undefined
+            ) {
+              if (response.data.Data >0) {
+                this.$message("确认行程成功，等待采购！");
+                this.ordertailVisible = false;
+               } else {
+                this.$message(response.Message);
+              }
+            } else {
+              this.$message(response.Message);
+            }
+          },
+          error => {
+            this.$message(error);
+            console.log(error);
+          }
+        );
+    },
+    //获取确认机票信息
+    getGetOrderAirTicketList() {
+      this.$http
+        .post(
+          "/api/Boss/GetOrderAirTicketList",
+          Service.Encrypt.DataEncryption({
+            OrderId: this.form.orderId
+          })
+        )
+        .then(
+          response => {
+            if (
+              response.data.Data &&
+              response.data.Data != null &&
+              response.data.Data != undefined
+            ) {
+              if (response.data.Status == 100) {
+                
+                this.tableDataairtop = response.data.Data;
+                this.showTicketPrice = response.data.Data[0].TicketPrice;
+                this.showFuelPrice = response.data.Data[0].FuelPrice;
+              } else {
+                this.$message(response.data.Message);
+              }
+            } else {
+              this.$message(response.data.Message);
+            }
+          },
+          error => {
+            this.$message(error);
+            console.log(error);
+          }
+        );
+    },
+    //获取火车票信息
+    getGetOrderTrainTicketList() {
+      this.$http
+        .post(
+          "/api/Boss/GetOrderTrainTicketList",
+          Service.Encrypt.DataEncryption({
+            OrderId: this.form.orderId
+          })
+        )
+        .then(
+          response => {
+            if (
+              response.data.Data &&
+              response.data.Data != null &&
+              response.data.Data != undefined
+            ) {
+              if (response.data.Status == 100) {
+                
+                this.tableDataTrainTop = response.data.Data;
+                this.showtrainprice = response.data.Data[0].TicketPrice;
+              } else {
+                this.$message(response.data.Message);
+              }
+            } else {
+              this.$message(response.data.Message);
+            }
+          },
+          error => {
+            this.$message(error);
+            console.log(error);
+          }
+        );
+    },
+    //获取酒店信息
+     getGetOrderHotelList() {
+      this.$http
+        .post(
+          "/api/Boss/GetOrderHotelList",
+          Service.Encrypt.DataEncryption({
+            OrderId: this.form.orderId
+          })
+        )
+        .then(
+          response => {
+            if (
+              response.data.Data &&
+              response.data.Data != null &&
+              response.data.Data != undefined
+            ) {
+              if (response.data.Status == 100) {
+                
+                this.tableDataHotelTop = response.data.Data;
+                this.hotelTotalPrice = response.data.Data[0].TotalPrice;
+              } else {
+                this.$message(response.data.Message);
+              }
+            } else {
+              this.$message(response.data.Message);
+            }
+          },
+          error => {
+            this.$message(error);
+            console.log(error);
+          }
+        );
+    },
   },
   mounted() {
     this.user = JSON.parse(localStorage.getItem("ms_username"));

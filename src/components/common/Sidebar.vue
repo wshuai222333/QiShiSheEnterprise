@@ -56,18 +56,18 @@
                                 index: 'orderlist',
                                 title: '行程列表'
                             },
-                            {
-                                index: '403',
-                                title: '结果页'
-                            },
-                             {
-                                index: 'confirmorder',
-                                title: '确认订单'
-                            },
-                             {
-                                index: 'waitconfirmtishi',
-                                title: '提示页'
-                            }
+                            // {
+                            //     index: '403',
+                            //     title: '结果页'
+                            // },
+                            //  {
+                            //     index: 'confirmorder',
+                            //     title: '确认订单'
+                            // },
+                            //  {
+                            //     index: 'waitconfirmtishi',
+                            //     title: '提示页'
+                            // }
                             
                         ]
                     }
