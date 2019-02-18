@@ -34,8 +34,8 @@ export default {
   data: function() {
     return {
       ruleForm: {
-        username: "18611131742",
-        password: "123123"
+        username: "",
+        password: ""
       },
       rules: {
         username: [

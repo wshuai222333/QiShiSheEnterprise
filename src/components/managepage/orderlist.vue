@@ -69,7 +69,12 @@
         <el-card class="box-card" style="width:100%">
           <div slot="header" class="clearfix">
             <span>机票信息</span>
-            <el-button v-if="form.status==1" style="float: right; padding: 3px 0" type="text" @click="openselectair">更改航班</el-button>
+            <el-button
+              v-if="form.status==1"
+              style="float: right; padding: 3px 0"
+              type="text"
+              @click="openselectair"
+            >更改航班</el-button>
           </div>
           <div>
             <el-table :data="tableDataairtop">
@@ -297,7 +302,7 @@ export default {
         hotelCheckinDate: "",
         hotelCheckoutDate: "",
         status: "",
-        totalPrice:""
+        totalPrice: ""
       },
       tableDataairtop: [],
       showTicketPrice: "",
@@ -537,31 +542,27 @@ export default {
       this.form.status = order.Status;
       this.form.totalPrice = order.TotalPrice;
 
-      this.showTicketPrice="";
-      this.showFuelPrice="";
-      this.showtrainprice="";
-      this.hotelTotalPrice="";
-      this.showTotalPrice="";
+      this.showTicketPrice = "";
+      this.showFuelPrice = "";
+      this.showtrainprice = "";
+      this.hotelTotalPrice = "";
+      this.showTotalPrice = "";
 
       this.getGetOrderApartmentList();
       this.getOrderPassengerlist();
-      
 
-      if(this.form.status==1){
-      this.getselectairlist();
-      this.getselecttrainlist();
-      this.getselecthotellist();
-      this.showTotalPrice =
-                  this.showTicketPrice + this.showFuelPrice
-                  this.hotelTotalPrice;
+      if (this.form.status == 1) {
+        this.getselectairlist();
+        this.getselecttrainlist();
+        this.getselecthotellist();
+        this.showTotalPrice =
+          this.showTicketPrice + this.showFuelPrice + this.hotelTotalPrice;
+      } else {
+        this.getGetOrderAirTicketList();
+        this.getGetOrderTrainTicketList();
+        this.getGetOrderHotelList();
+        this.showTotalPrice = this.form.totalPrice;
       }
-      else{
-       this.getGetOrderAirTicketList();
-       this.getGetOrderTrainTicketList();
-       this.getGetOrderHotelList();
-       this.showTotalPrice =this.form.totalPrice;
-      }
-     
     },
     //获取选择航班
     getselectairlist() {
@@ -625,7 +626,6 @@ export default {
         )
         .then(
           response => {
-            
             if (
               response.data.Data &&
               response.data.Data != null &&
@@ -760,7 +760,6 @@ export default {
             ) {
               if (response.data.Status == 100) {
                 this.tableDataPass = response.data.Data;
-               
               } else {
                 this.$message(response.data.Message);
               }
@@ -782,9 +781,9 @@ export default {
           "/api/Enterprise/ConfirmOrder",
           Service.Encrypt.DataEncryption({
             OrderId: this.form.orderId,
-            SelectAirTicketId:this.tableDataairtop[0].SelectAirTicketId,
-            SelectTrainTicketId:this.tableDataTrainTop[0].SelectTrainTicketId,
-            SelectHotelId:this.tableDataHotelTop[0].SelectHotelId,
+            SelectAirTicketId: this.tableDataairtop[0].SelectAirTicketId,
+            SelectTrainTicketId: this.tableDataTrainTop[0].SelectTrainTicketId,
+            SelectHotelId: this.tableDataHotelTop[0].SelectHotelId
           })
         )
         .then(
@@ -794,10 +793,11 @@ export default {
               response.data.Data != null &&
               response.data.Data != undefined
             ) {
-              if (response.data.Data >0) {
+              if (response.data.Data > 0) {
                 this.$message("确认行程成功，等待采购！");
                 this.ordertailVisible = false;
-               } else {
+                this.onQueryClick(1);
+              } else {
                 this.$message(response.Message);
               }
             } else {
@@ -827,7 +827,6 @@ export default {
               response.data.Data != undefined
             ) {
               if (response.data.Status == 100) {
-                
                 this.tableDataairtop = response.data.Data;
                 this.showTicketPrice = response.data.Data[0].TicketPrice;
                 this.showFuelPrice = response.data.Data[0].FuelPrice;
@@ -861,7 +860,6 @@ export default {
               response.data.Data != undefined
             ) {
               if (response.data.Status == 100) {
-                
                 this.tableDataTrainTop = response.data.Data;
                 this.showtrainprice = response.data.Data[0].TicketPrice;
               } else {
@@ -878,7 +876,7 @@ export default {
         );
     },
     //获取酒店信息
-     getGetOrderHotelList() {
+    getGetOrderHotelList() {
       this.$http
         .post(
           "/api/Boss/GetOrderHotelList",
@@ -894,7 +892,6 @@ export default {
               response.data.Data != undefined
             ) {
               if (response.data.Status == 100) {
-                
                 this.tableDataHotelTop = response.data.Data;
                 this.hotelTotalPrice = response.data.Data[0].TotalPrice;
               } else {
@@ -909,7 +906,7 @@ export default {
             console.log(error);
           }
         );
-    },
+    }
   },
   mounted() {
     this.user = JSON.parse(localStorage.getItem("ms_username"));

@@ -16,7 +16,7 @@
       </el-steps>
       <!--form表单-->
       <div class="form-box">
-        <el-form ref="form" :model="form" label-width="100px">
+        <el-form ref="form" :model="form" :rules="rules2" label-width="100px">
           <el-form-item>
             <p style="border-bottom:1px;"></p>
           </el-form-item>
@@ -26,6 +26,41 @@
               <el-radio-button label="1" @click.native="onBookingTypeClick(1)">酒店</el-radio-button>
               <el-radio-button label="2" @click.native="onBookingTypeClick(2)">机票/火车票&&酒店</el-radio-button>
             </el-radio-group>
+          </el-form-item>
+          <el-form-item label="行程城市">
+            <el-col :span="8">
+              <el-select
+                v-model="form.departcity"
+                filterable
+                :filter-method="querydSearch"
+                placeholder="出发城市/汉字/全拼"
+              >
+                <el-option
+                  v-for="item in departcitys"
+                  :key="item.City_Code"
+                  :label="item.City_Name"
+                  :value="item.City_Name"
+                ></el-option>
+              </el-select>
+            </el-col>
+            <el-col class="line" :span="2">
+              <i class="el-icon-arrow-right"></i>
+            </el-col>
+            <el-col :span="8">
+              <el-select
+                v-model="form.arrivecity"
+                filterable
+                :filter-method="queryaSearch"
+                placeholder="到达城市/汉字/全拼"
+              >
+                <el-option
+                  v-for="item in arrivecitys"
+                  :key="item.City_Code"
+                  :label="item.City_Name"
+                  :value="item.City_Name"
+                ></el-option>
+              </el-select>
+            </el-col>
           </el-form-item>
           <!--行程信息-->
           <div v-show="airshow">
@@ -62,14 +97,16 @@
               </el-row>
               <el-row>
                 <el-col :span="11">
-                  <el-date-picker
-                    :disabled="form.returndate"
-                    type="date"
-                    placeholder="返回日期"
-                    v-model="form.arrivedate"
-                    style="width: 100%;"
-                    @change="changearrivedate"
-                  ></el-date-picker>
+                  <el-form-item prop="arrivedate">
+                    <el-date-picker
+                      :disabled="form.returndate"
+                      type="date"
+                      placeholder="返回日期"
+                      v-model="form.arrivedate"
+                      style="width: 100%;"
+                      @change="changearrivedate"
+                    ></el-date-picker>
+                  </el-form-item>
                 </el-col>
                 <el-col class="line" :span="2">
                   <i class="el-icon-minus"></i>
@@ -90,41 +127,7 @@
                 </el-col>
               </el-row>
             </el-form-item>
-            <el-form-item label="行程城市">
-              <el-col :span="8">
-                <el-select
-                  v-model="form.departcity"
-                  filterable
-                  :filter-method="querydSearch"
-                  placeholder="出发城市/汉字/全拼"
-                >
-                  <el-option
-                    v-for="item in departcitys"
-                    :key="item.City_Code"
-                    :label="item.City_Name"
-                    :value="item.City_Name"
-                  ></el-option>
-                </el-select>
-              </el-col>
-              <el-col class="line" :span="2">
-                <i class="el-icon-arrow-right"></i>
-              </el-col>
-              <el-col :span="8">
-                <el-select
-                  v-model="form.arrivecity"
-                  filterable
-                  :filter-method="queryaSearch"
-                  placeholder="到达城市/汉字/全拼"
-                >
-                  <el-option
-                    v-for="item in arrivecitys"
-                    :key="item.City_Code"
-                    :label="item.City_Name"
-                    :value="item.City_Name"
-                  ></el-option>
-                </el-select>
-              </el-col>
-            </el-form-item>
+
             <el-form-item label="期望交通方式">
               <el-radio-group v-model="form.travelway">
                 <el-radio-button label="0">飞机</el-radio-button>
@@ -204,12 +207,11 @@
                 @click="addHDomain"
               >添加房型</el-button>
             </el-form-item>
-
+            <!-- :prop="'domains.' + index + '.value'" -->
             <el-form-item
               v-for="(domain, index) in dynamicHValidateForm.Apartment"
               :label="'房型' + (index+1)"
               :key="domain.key"
-              :prop="'domains.' + index + '.value'"
               :rules="{
       required: true, message: '房型不能为空', trigger: 'blur'
     }"
@@ -246,29 +248,42 @@
               @click="addDomain"
             >添加出行人</el-button>
           </el-form-item>
+          <!-- :prop="'Passenger.' + index + '.PassengerName'" -->
           <el-form-item
             v-for="(domain, index) in dynamicValidateForm.Passenger"
             :label="'出行人' + (index+1)"
             :key="domain.key"
-            :prop="'Passenger.' + index + '.PassengerName'"
             :rules="{
       required: true, message: '出行人不能为空', trigger: 'blur'
     }"
           >
-            <el-select v-model="domain.PassengerName" placeholder="选择出行人">
-              <el-option
-                v-for="item in staffoptions"
-                :key="item.StaffId"
-                :label="item.StaffName"
-                :value="item.StaffName"
-              ></el-option>
-            </el-select>
-
-            <el-button @click.prevent="removeDomain(domain)">删除</el-button>
+            <el-row>
+              <el-col :span="6">
+                <el-select
+                  v-model="domain.PassengerName"
+                  filterable
+                  :filter-method="querydSearch"
+                  placeholder="选择出行人"
+                >
+                  <el-option
+                    v-for="item in selectstaffs"
+                    :key="item.StaffId"
+                    :label="item.StaffName"
+                    :value="item.StaffName"
+                  ></el-option>
+                </el-select>
+              </el-col>
+              <el-col :span="12" :offset="1">
+                <el-input v-model="domain.CardNo"></el-input>
+              </el-col>
+               <el-col :span="4" :offset="1">
+              <el-button @click.prevent="removeDomain(domain)">删除</el-button>
+                </el-col>
+            </el-row>
           </el-form-item>
 
           <el-form-item>
-            <el-button type="primary" @click="onSubmit">提交</el-button>
+            <el-button type="primary" @click="onSubmit('form')">提交</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -281,8 +296,22 @@ import Service from "../../_common";
 
 export default {
   name: "baseform",
-  data: function() {
+  data() {
+    var validateArrivedate = (rule, value, callback) => {
+      if (value) {
+        if (value < this.form.departdate) {
+          callback(new Error("返回日期不能小于出发日期"));
+        } else {
+          callback();
+        }
+      } else {
+        callback();
+      }
+    };
     return {
+      rules2: {
+        arrivedate: [{ validator: validateArrivedate, trigger: "change" }]
+      },
       user: null,
       expecttraveltimes: [
         { value: "0", label: "06:00-08:00" },
@@ -299,7 +328,8 @@ export default {
       dynamicValidateForm: {
         Passenger: [
           {
-            PassengerName: ""
+            PassengerName: "",
+            CardNo: ""
           }
         ]
       },
@@ -318,7 +348,7 @@ export default {
         { value: "3", label: "豪华套件" }
       ],
       departcitys: [],
-      arrivecitys:[],
+      arrivecitys: [],
       restaurantsall: [],
       value8: "",
       form: {
@@ -338,11 +368,12 @@ export default {
         hoteltype: "0",
         destination: "",
         hotellocation: "0",
-        hotelothers: "",
-},
+        hotelothers: ""
+      },
       airshow: true,
       hotelshow: true,
-      destinationshow: false
+      destinationshow: false,
+      selectstaffs: []
     };
   },
   methods: {
@@ -402,59 +433,70 @@ export default {
         this.destinationshow = false;
       }
     },
-    onSubmit() {
+    onSubmit(formName) {
       debugger;
-      var list = this.dynamicValidateForm;
-      this.$http
-        .post(
-          "/api/Enterprise/GenerateOrder",
-          Service.Encrypt.DataEncryption({
-            BookingType:this.form.bookingtype,
-            TravelType:this.form.traveltype,
-            DepartDate:this.form.departdate,
-            ArriveDate:this.form.arrivedate,
-            DepartCity:this.form.departcity,
-            ArriveCity:this.form.arrivecity,
-            TravelWay:this.form.travelway,
-            ExpectDepartTime:this.form.expectdeparttime,
-            ExpectArrivetime:this.form.expectarrivetime,
-            TravelOthers:this.form.travelothers,
+      this.$refs[formName].validate(valid => {
+        debugger;
+        if (valid) {
+          debugger;
+          var list = this.dynamicValidateForm;
+          this.$http
+            .post(
+              "/api/Enterprise/GenerateOrder",
+              Service.Encrypt.DataEncryption({
+                BookingType: this.form.bookingtype,
+                TravelType: this.form.traveltype,
+                DepartDate: this.form.departdate,
+                ArriveDate: this.form.arrivedate,
+                DepartCity: this.form.departcity,
+                ArriveCity: this.form.arrivecity,
+                TravelWay: this.form.travelway,
+                ExpectDepartTime: this.form.expectdeparttime,
+                ExpectArrivetime: this.form.expectarrivetime,
+                TravelOthers: this.form.travelothers,
 
-            HotelCheckinDate:this.form.hotelcheckindate,
-            HotelCheckoutDate:this.form.hotelcheckoutdate,
-            HotelType:this.form.hoteltype,
-            Destination:this.form.destination,
-            HotelLocation:this.form.hotellocation,
-            HotelOthers:this.form.hotelothers,
-            
-            Passengers: this.dynamicValidateForm.Passenger,
-            Apartments:this.dynamicHValidateForm.Apartment,
+                HotelCheckinDate: this.form.hotelcheckindate,
+                HotelCheckoutDate: this.form.hotelcheckoutdate,
+                HotelType: this.form.hoteltype,
+                Destination: this.form.destination,
+                HotelLocation: this.form.hotellocation,
+                HotelOthers: this.form.hotelothers,
 
-            EnterpriseId:this.user.EnterpriseId,
-            StaffId:this.user.StaffId
-          })
-        )
-        .then(
-          response => {
-            if (
-              response.data.Data &&
-              response.data.Data != null &&
-              response.data.Data != undefined
-            ) {
-              if (response.data.Status == 100) {
-                this.$message.success("提交成功");
-              } else {
-                this.$message.success("提交失败");
+                Passengers: this.dynamicValidateForm.Passenger,
+                Apartments: this.dynamicHValidateForm.Apartment,
+
+                EnterpriseId: this.user.EnterpriseId,
+                StaffId: this.user.StaffId
+              })
+            )
+            .then(
+              response => {
+                if (
+                  response.data.Data &&
+                  response.data.Data != null &&
+                  response.data.Data != undefined
+                ) {
+                  debugger;
+                  if (response.data.Status == 100) {
+                    this.$message.success("提交成功");
+                    this.$router.push("waitconfirmtishi");
+                  } else {
+                    this.$message.success("提交失败");
+                  }
+                } else {
+                  this.$message.success("提交失败");
+                }
+              },
+              error => {
+                this.$message("请求失败！");
+                console.log(error);
               }
-            } else {
-              this.$message.success("提交失败");
-            }
-          },
-          error => {
-            this.$message("请求失败！");
-            console.log(error);
-          }
-        );
+            );
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
     },
     querydSearch(query) {
       if (query !== "") {
@@ -524,6 +566,7 @@ export default {
             ) {
               if (response.data.Status == 100) {
                 this.staffoptions = response.data.Data;
+                this.selectstaffs = response.data.Data;
               } else {
                 this.staffoptions = [];
               }
@@ -536,6 +579,16 @@ export default {
             console.log(error);
           }
         );
+    },
+    //出行人选择
+    staffquerySearch(query) {
+      if (query !== "") {
+        this.selectstaffs = this.staffoptions.filter(item => {
+          return item.StaffName.toLowerCase().indexOf(query.toLowerCase()) > -1;
+        });
+      } else {
+        this.selectstffs = this.staffoptions;
+      }
     }
   },
   mounted() {
