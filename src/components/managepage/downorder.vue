@@ -264,21 +264,22 @@
                   filterable
                   :filter-method="querydSearch"
                   placeholder="选择出行人"
-                >
+                  >
                   <el-option
                     v-for="item in selectstaffs"
                     :key="item.StaffId"
                     :label="item.StaffName"
-                    :value="item.StaffName"
+                    :value="item"
                   ></el-option>
                 </el-select>
               </el-col>
-              <el-col :span="12" :offset="1">
-                <el-input v-model="domain.CardNo"></el-input>
+              <!-- <el-col :span="3" :offset="1">证件号</el-col>
+              <el-col :span="8">
+                <el-input v-model="domain.name.StaffCardNo"></el-input>
+              </el-col> -->
+              <el-col :span="4" :offset="1">
+                <el-button @click.prevent="removeDomain(domain)">删除</el-button>
               </el-col>
-               <el-col :span="4" :offset="1">
-              <el-button @click.prevent="removeDomain(domain)">删除</el-button>
-                </el-col>
             </el-row>
           </el-form-item>
 
