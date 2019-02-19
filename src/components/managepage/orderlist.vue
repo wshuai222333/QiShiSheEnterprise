@@ -204,7 +204,7 @@
             </el-table>
           </div>
           <div class="price">
-            <strong class="price-subtotal">总计:{{showTotalPrice}}</strong>
+            <strong class="price-subtotal">总计:{{totalprince}}</strong>
           </div>
         </el-card>
 
@@ -305,21 +305,21 @@ export default {
         totalPrice: ""
       },
       tableDataairtop: [],
-      showTicketPrice: "",
-      showFuelPrice: "",
+      showTicketPrice: 0,
+      showFuelPrice: 0,
       tableDataair: [],
       aircurrentRow: null,
       tableDataTrainTop: [],
       tableDataTrain: [],
-      showtrainprice: "",
+      showtrainprice: 0,
       traincurrentRow: null,
       tableDataHotelTop: [],
       tableDataHotel: [],
       tableDataRooms: [],
-      hotelTotalPrice: "",
+      hotelTotalPrice: 0,
       hotelcurrentRow: null,
       tableDataPass: [],
-      showTotalPrice: ""
+      showTotalPrice: 0
     };
   },
 
@@ -555,8 +555,12 @@ export default {
         this.getselectairlist();
         this.getselecttrainlist();
         this.getselecthotellist();
+        debugger;
         this.showTotalPrice =
-          this.showTicketPrice + this.showFuelPrice + this.hotelTotalPrice;
+          this.showTicketPrice +
+          this.showFuelPrice +
+          this.showtrainprice +
+          this.hotelTotalPrice;
       } else {
         this.getGetOrderAirTicketList();
         this.getGetOrderTrainTicketList();
@@ -584,9 +588,9 @@ export default {
                 this.tableDataair = response.data.Data;
                 if (this.tableDataairtop.length == 0) {
                   this.tableDataairtop.push(response.data.Data[0]);
-                  this.showTicketPrice = response.data.Data[0].TicketPrice;
-                  this.showFuelPrice = response.data.Data[0].FuelPrice;
                 }
+                this.showTicketPrice = response.data.Data[0].TicketPrice;
+                this.showFuelPrice = response.data.Data[0].FuelPrice;
               } else {
                 this.$message(response.Message);
               }
@@ -632,11 +636,12 @@ export default {
               response.data.Data != undefined
             ) {
               if (response.data.Status == 100) {
+                debugger;
                 this.tableDataTrain = response.data.Data;
                 if (this.tableDataTrainTop == 0) {
                   this.tableDataTrainTop.push(response.data.Data[0]);
-                  this.showtrainprice = response.data.Data[0].TicketPrice;
                 }
+                this.showtrainprice = response.data.Data[0].TicketPrice;
               } else {
                 this.$message(response.Message);
               }
@@ -681,10 +686,11 @@ export default {
             ) {
               if (response.data.Status == 100) {
                 this.tableDataHotel = response.data.Data;
+                debugger;
                 if (this.tableDataHotelTop.length == 0) {
                   this.tableDataHotelTop.push(response.data.Data[0]);
-                  this.hotelTotalPrice = response.data.Data[0].TotalPrice;
                 }
+                this.hotelTotalPrice = response.data.Data[0].TotalPrice;
               } else {
                 this.$message(response.Message);
               }
@@ -911,6 +917,16 @@ export default {
   mounted() {
     this.user = JSON.parse(localStorage.getItem("ms_username"));
     this.onQueryClick(1);
+  },
+  computed:{
+    totalprince:function(){
+      var total = 0
+      total=this.showTicketPrice +
+          this.showFuelPrice +
+          this.showtrainprice +
+          this.hotelTotalPrice;
+      return total;
+    }
   }
 };
 </script>

@@ -262,14 +262,14 @@
                 <el-select
                   v-model="domain.PassengerName"
                   filterable
-                  :filter-method="querydSearch"
+                  :filter-method="staffquerySearch"
                   placeholder="选择出行人"
                   >
                   <el-option
                     v-for="item in selectstaffs"
                     :key="item.StaffId"
                     :label="item.StaffName"
-                    :value="item"
+                    :value="item.StaffName"
                   ></el-option>
                 </el-select>
               </el-col>
@@ -583,6 +583,7 @@ export default {
     },
     //出行人选择
     staffquerySearch(query) {
+      debugger;
       if (query !== "") {
         this.selectstaffs = this.staffoptions.filter(item => {
           return item.StaffName.toLowerCase().indexOf(query.toLowerCase()) > -1;
