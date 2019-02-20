@@ -30,9 +30,9 @@
                         {{username}} <i class="el-icon-caret-bottom"></i>
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                        <a href="http://blog.gdfengshuo.com/about/" target="_blank">
+                        <!-- <a href="http://blog.gdfengshuo.com/about/" target="_blank">
                             <el-dropdown-item>修改密码</el-dropdown-item>
-                        </a>
+                        </a> -->
                     <el-dropdown-item divided  command="loginout">退出登录</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>

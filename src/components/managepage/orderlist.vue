@@ -10,8 +10,8 @@
     </div>
     <div class="container">
       <div class="handle-box">
-        <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
-        <el-button type="primary" icon="search" @click="search">搜索</el-button>
+        <!-- <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
+        <el-button type="primary" icon="search" @click="search">搜索</el-button> -->
       </div>
       <el-table :data="tableData" border class="table" ref="multipleTable">
         <el-table-column prop="OrderId" label="订单号"></el-table-column>
@@ -91,7 +91,7 @@
                     title="退改签规定"
                     width="200"
                     trigger="hover"
-                    content="起飞前2小时扣除80%票价;起飞前2小时后扣除100%票价"
+                    :content="scope.row.AirTicketRules"
                   >
                     <el-button slot="reference">退改签</el-button>
                   </el-popover>
@@ -135,7 +135,7 @@
                     title="退改签规定"
                     width="200"
                     trigger="hover"
-                    content="起飞前2小时扣除80%票价;起飞前2小时后扣除100%票价"
+                    :content="scope.row.TrainTicketRules"
                   >
                     <el-button slot="reference">退改签</el-button>
                   </el-popover>
@@ -174,9 +174,9 @@
                     title="酒店规定"
                     width="200"
                     trigger="hover"
-                    content="酒店规定"
+                    :content="scope.row.HotelRules"
                   >
-                    <el-button slot="reference">酒店规定</el-button>
+                    <el-button slot="reference">退改签</el-button>
                   </el-popover>
                 </template>
               </el-table-column>
@@ -304,6 +304,7 @@ export default {
         status: "",
         totalPrice: ""
       },
+      tableData:[],
       tableDataairtop: [],
       showTicketPrice: 0,
       showFuelPrice: 0,
@@ -318,13 +319,8 @@ export default {
       tableDataRooms: [],
       hotelTotalPrice: 0,
       hotelcurrentRow: null,
-      tableDataPass: [],
-      showTotalPrice: 0
+      tableDataPass: []
     };
-  },
-
-  created() {
-    this.getData();
   },
   methods: {
     formatterbookingtype(row, column) {
@@ -481,20 +477,6 @@ export default {
     handleCurrentChange(val) {
       this.onQueryClick(val);
     },
-    // 获取 easy-mock 的模拟数据
-    getData() {
-      // 开发环境使用 easy-mock 数据，正式环境使用 json 文件
-      if (process.env.NODE_ENV === "development") {
-        this.url = "/ms/table/list";
-      }
-      this.$axios
-        .post(this.url, {
-          page: this.cur_page
-        })
-        .then(res => {
-          this.tableData = res.data.list;
-        });
-    },
     search() {
       this.is_search = true;
     },
@@ -542,11 +524,10 @@ export default {
       this.form.status = order.Status;
       this.form.totalPrice = order.TotalPrice;
 
-      this.showTicketPrice = "";
-      this.showFuelPrice = "";
-      this.showtrainprice = "";
-      this.hotelTotalPrice = "";
-      this.showTotalPrice = "";
+      this.showTicketPrice = 0;
+      this.showFuelPrice = 0;
+      this.showtrainprice = 0;
+      this.hotelTotalPrice = 0;
 
       this.getGetOrderApartmentList();
       this.getOrderPassengerlist();
@@ -555,17 +536,10 @@ export default {
         this.getselectairlist();
         this.getselecttrainlist();
         this.getselecthotellist();
-        debugger;
-        this.showTotalPrice =
-          this.showTicketPrice +
-          this.showFuelPrice +
-          this.showtrainprice +
-          this.hotelTotalPrice;
       } else {
         this.getGetOrderAirTicketList();
         this.getGetOrderTrainTicketList();
         this.getGetOrderHotelList();
-        this.showTotalPrice = this.form.totalPrice;
       }
     },
     //获取选择航班
@@ -584,15 +558,21 @@ export default {
               response.data.Data != null &&
               response.data.Data != undefined
             ) {
-              if (response.data.Status == 100) {
+              if (
+                response.data.Status == 100 &&
+                response.data.Data.length > 0
+              ) {
                 this.tableDataair = response.data.Data;
-                if (this.tableDataairtop.length == 0) {
+                if (this.tableDataairtop.length < 1) {
                   this.tableDataairtop.push(response.data.Data[0]);
+                  this.showTicketPrice = response.data.Data[0].TicketPrice;
+                  this.showFuelPrice = response.data.Data[0].FuelPrice;
+                } else {
+                  this.showTicketPrice = this.tableDataairtop[0].TicketPrice;
+                  this.showFuelPrice = this.tableDataairtop[0].FuelPrice;
                 }
-                this.showTicketPrice = response.data.Data[0].TicketPrice;
-                this.showFuelPrice = response.data.Data[0].FuelPrice;
               } else {
-                this.$message(response.Message);
+                //this.$message(response.Message);
               }
             } else {
               this.$message(response.Message);
@@ -635,15 +615,20 @@ export default {
               response.data.Data != null &&
               response.data.Data != undefined
             ) {
-              if (response.data.Status == 100) {
+              if (
+                response.data.Status == 100 &&
+                response.data.Data.length > 0
+              ) {
                 debugger;
                 this.tableDataTrain = response.data.Data;
-                if (this.tableDataTrainTop == 0) {
+                if (this.tableDataTrainTop.length < 1) {
                   this.tableDataTrainTop.push(response.data.Data[0]);
+                  this.showtrainprice = response.data.Data[0].TicketPrice;
+                } else {
+                  this.showtrainprice = this.tableDataTrainTop.TicketPrice;
                 }
-                this.showtrainprice = response.data.Data[0].TicketPrice;
               } else {
-                this.$message(response.Message);
+                //this.$message(response.Message);
               }
             } else {
               this.$message(response.Message);
@@ -684,15 +669,20 @@ export default {
               response.data.Data != null &&
               response.data.Data != undefined
             ) {
-              if (response.data.Status == 100) {
+              if (
+                response.data.Status == 100 &&
+                response.data.Data.length > 0
+              ) {
                 this.tableDataHotel = response.data.Data;
                 debugger;
-                if (this.tableDataHotelTop.length == 0) {
+                if (this.tableDataHotelTop.length < 1) {
                   this.tableDataHotelTop.push(response.data.Data[0]);
+                  this.hotelTotalPrice = response.data.Data[0].TotalPrice;
+                } else {
+                  this.hotelTotalPrice = this.tableDataHotelTop[0].TotalPrice;
                 }
-                this.hotelTotalPrice = response.data.Data[0].TotalPrice;
               } else {
-                this.$message(response.Message);
+                // this.$message(response.Message);
               }
             } else {
               this.$message(response.Message);
@@ -781,15 +771,29 @@ export default {
     },
     //确认行程订单
     submitOrderTravel() {
-      debugger;
+      
+      var selectAirTicketId = 0;
+      var selectTrainTicketId = 0;
+      var selectHotelId = 0;
+
+      if (this.tableDataairtop.length > 0) {
+        selectAirTicketId = this.tableDataairtop[0].SelectAirTicketId;
+      }
+      if (this.tableDataTrainTop.length > 0) {
+        selectTrainTicketId = this.tableDataTrainTop[0].SelectTrainTicketId;
+      }
+      if (this.tableDataHotelTop.length > 0) {
+        selectHotelId = this.tableDataHotelTop[0].SelectHotelId;
+      }
       this.$http
         .post(
           "/api/Enterprise/ConfirmOrder",
           Service.Encrypt.DataEncryption({
             OrderId: this.form.orderId,
-            SelectAirTicketId: this.tableDataairtop[0].SelectAirTicketId,
-            SelectTrainTicketId: this.tableDataTrainTop[0].SelectTrainTicketId,
-            SelectHotelId: this.tableDataHotelTop[0].SelectHotelId
+            SelectAirTicketId: selectAirTicketId,
+            SelectTrainTicketId: selectTrainTicketId,
+            SelectHotelId: selectHotelId,
+            TotalPrice: this.totalprince
           })
         )
         .then(
@@ -800,9 +804,9 @@ export default {
               response.data.Data != undefined
             ) {
               if (response.data.Data > 0) {
+                this.onQueryClick(1);
                 this.$message("确认行程成功，等待采购！");
                 this.ordertailVisible = false;
-                this.onQueryClick(1);
               } else {
                 this.$message(response.Message);
               }
@@ -918,13 +922,17 @@ export default {
     this.user = JSON.parse(localStorage.getItem("ms_username"));
     this.onQueryClick(1);
   },
-  computed:{
-    totalprince:function(){
-      var total = 0
-      total=this.showTicketPrice +
-          this.showFuelPrice +
-          this.showtrainprice +
-          this.hotelTotalPrice;
+  activated() {
+   this.onQueryClick(1);
+ },
+ computed: {
+    totalprince: function() {
+      var total = 0;
+      total =
+        this.showTicketPrice +
+        this.showFuelPrice +
+        this.showtrainprice +
+        this.hotelTotalPrice;
       return total;
     }
   }
