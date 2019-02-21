@@ -29,37 +29,41 @@
           </el-form-item>
           <el-form-item label="行程城市">
             <el-col :span="8">
-              <el-select
-                v-model="form.departcity"
-                filterable
-                :filter-method="querydSearch"
-                placeholder="出发城市/汉字/全拼"
-              >
-                <el-option
-                  v-for="item in departcitys"
-                  :key="item.City_Code"
-                  :label="item.City_Name"
-                  :value="item.City_Name"
-                ></el-option>
-              </el-select>
+              <el-form-item prop="departcity">
+                <el-select
+                  v-model="form.departcity"
+                  filterable
+                  :filter-method="querydSearch"
+                  placeholder="出发城市/汉字/全拼"
+                >
+                  <el-option
+                    v-for="item in departcitys"
+                    :key="item.City_Code"
+                    :label="item.City_Name"
+                    :value="item.City_Name"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
             </el-col>
             <el-col class="line" :span="2">
               <i class="el-icon-arrow-right"></i>
             </el-col>
             <el-col :span="8">
-              <el-select
-                v-model="form.arrivecity"
-                filterable
-                :filter-method="queryaSearch"
-                placeholder="到达城市/汉字/全拼"
-              >
-                <el-option
-                  v-for="item in arrivecitys"
-                  :key="item.City_Code"
-                  :label="item.City_Name"
-                  :value="item.City_Name"
-                ></el-option>
-              </el-select>
+              <el-form-item prop="arrivecity">
+                <el-select
+                  v-model="form.arrivecity"
+                  filterable
+                  :filter-method="queryaSearch"
+                  placeholder="到达城市/汉字/全拼"
+                >
+                  <el-option
+                    v-for="item in arrivecitys"
+                    :key="item.City_Code"
+                    :label="item.City_Name"
+                    :value="item.City_Name"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
             </el-col>
           </el-form-item>
           <!--行程信息-->
@@ -157,12 +161,14 @@
               </el-col>
               <el-col class="line" :span="2">-</el-col>
               <el-col :span="11">
-                <el-date-picker
-                  type="date"
-                  placeholder="离店日期"
-                  v-model="form.hotelcheckoutdate"
-                  style="width: 100%;"
-                ></el-date-picker>
+                <el-form-item prop="hotelcheckoutdate">
+                  <el-date-picker
+                    type="date"
+                    placeholder="离店日期"
+                    v-model="form.hotelcheckoutdate"
+                    style="width: 100%;"
+                  ></el-date-picker>
+                </el-form-item>
               </el-col>
             </el-form-item>
             <el-form-item label="酒店类型">
@@ -209,7 +215,7 @@
             </el-form-item>
             <!-- :prop="'domains.' + index + '.value'" -->
             <el-form-item
-              v-for="(domain, index) in dynamicHValidateForm.Apartment"
+              v-for="(domain, index) in form.Apartment"
               :label="'房型' + (index+1)"
               :key="domain.key"
               :rules="{
@@ -248,14 +254,15 @@
               @click="addDomain"
             >添加出行人</el-button>
           </el-form-item>
-          <!-- :prop="'Passenger.' + index + '.PassengerName'" -->
+
           <el-form-item
-            v-for="(domain, index) in dynamicValidateForm.Passenger"
+            v-for="(domain, index) in form.Passenger"
             :label="'出行人' + (index+1)"
             :key="domain.key"
-            :rules="{
-      required: true, message: '出行人不能为空', trigger: 'blur'
-    }"
+            :prop="'Passenger.' + index + '.PassengerName'"
+            :rules="[{
+      required: true, message: '出行人不能为空', trigger:  ['blur', 'change']
+    }]"
           >
             <el-row>
               <el-col :span="6">
@@ -264,7 +271,7 @@
                   filterable
                   :filter-method="staffquerySearch"
                   placeholder="选择出行人"
-                  >
+                >
                   <el-option
                     v-for="item in selectstaffs"
                     :key="item.StaffId"
@@ -276,7 +283,7 @@
               <!-- <el-col :span="3" :offset="1">证件号</el-col>
               <el-col :span="8">
                 <el-input v-model="domain.name.StaffCardNo"></el-input>
-              </el-col> -->
+              </el-col>-->
               <el-col :span="4" :offset="1">
                 <el-button @click.prevent="removeDomain(domain)">删除</el-button>
               </el-col>
@@ -309,9 +316,29 @@ export default {
         callback();
       }
     };
+    var validateHotelcheckoutdate = (rule, value, callback) => {
+      if (value) {
+        if (value < this.form.hotelcheckindate) {
+          callback(new Error("离店日期不能小于入住日期"));
+        } else {
+          callback();
+        }
+      } else {
+        callback();
+      }
+    };
     return {
       rules2: {
-        arrivedate: [{ validator: validateArrivedate, trigger: "change" }]
+        arrivedate: [{ validator: validateArrivedate, trigger: "change" }],
+        hotelcheckoutdate: [
+          { validator: validateHotelcheckoutdate, trigger: "change" }
+        ],
+        departcity: [
+          { required: true, message: "请选择出发城市", trigger: "change" }
+        ],
+        arrivecity: [
+          { required: true, message: "请选择到达城市", trigger: "change" }
+        ]
       },
       user: null,
       expecttraveltimes: [
@@ -326,22 +353,6 @@ export default {
         { value: "9", label: "22:00-00:00" }
       ],
       staffoptions: [],
-      dynamicValidateForm: {
-        Passenger: [
-          {
-            PassengerName: "",
-            CardNo: ""
-          }
-        ]
-      },
-      dynamicHValidateForm: {
-        Apartment: [
-          {
-            ApartmentType: "0",
-            Apartmentcount: 1
-          }
-        ]
-      },
       hoteloptions: [
         { value: "0", label: "双人标间" },
         { value: "1", label: "商务大床" },
@@ -369,7 +380,18 @@ export default {
         hoteltype: "0",
         destination: "",
         hotellocation: "0",
-        hotelothers: ""
+        hotelothers: "",
+        Passenger: [
+          {
+            PassengerName: ""
+          }
+        ],
+        Apartment: [
+          {
+            ApartmentType: "0",
+            Apartmentcount: 1
+          }
+        ]
       },
       airshow: true,
       hotelshow: true,
@@ -398,27 +420,39 @@ export default {
       }
     },
     addDomain() {
-      this.dynamicValidateForm.Passenger.push({
-        value: "",
-        key: Date.now()
-      });
+      if (this.form.Passenger.length < 9) {
+        this.form.Passenger.push({
+          value: "",
+          key: Date.now()
+        });
+      } else {
+        this.$message.error("添加出行人数不能超过9人！");
+      }
     },
     removeDomain(item) {
-      var index = this.dynamicValidateForm.Passenger.indexOf(item);
-      if (index !== -1) {
-        this.dynamicValidateForm.Passenger.splice(index, 1);
+      if (this.form.Passenger.length > 1) {
+        var index = this.form.Passenger.indexOf(item);
+        if (index !== -1) {
+          this.form.Passenger.splice(index, 1);
+        }
+      } else {
+        this.$message.error("最少出行人数不能超过1人！");
       }
     },
     addHDomain() {
-      this.dynamicHValidateForm.Apartment.push({
+      this.form.Apartment.push({
         value: "",
         key: Date.now()
       });
     },
     removeHDomain(item) {
-      var index = this.dynamicHValidateForm.Apartment.indexOf(item);
-      if (index !== -1) {
-        this.dynamicHValidateForm.Apartment.splice(index, 1);
+      if (this.form.Apartment.length > 1) {
+        var index = this.form.Apartment.indexOf(item);
+        if (index !== -1) {
+          this.form.Apartment.splice(index, 1);
+        }
+      } else {
+        this.$message.error("最少房间数为1间！");
       }
     },
     changedepartdate() {
@@ -435,12 +469,17 @@ export default {
       }
     },
     onSubmit(formName) {
-      debugger;
+      if (
+        this.form.Passenger.length <
+        this.form.Apartment.length
+      ) {
+        this.$message.error("出行人数必须大于等于房间数！");
+        return false;
+      }
       this.$refs[formName].validate(valid => {
         debugger;
         if (valid) {
           debugger;
-          var list = this.dynamicValidateForm;
           this.$http
             .post(
               "/api/Enterprise/GenerateOrder",
@@ -463,8 +502,8 @@ export default {
                 HotelLocation: this.form.hotellocation,
                 HotelOthers: this.form.hotelothers,
 
-                Passengers: this.dynamicValidateForm.Passenger,
-                Apartments: this.dynamicHValidateForm.Apartment,
+                Passengers: this.form.Passenger,
+                Apartments: this.form.Apartment,
 
                 EnterpriseId: this.user.EnterpriseId,
                 StaffId: this.user.StaffId
@@ -482,10 +521,10 @@ export default {
                     this.$message.success("提交成功");
                     this.$router.push("waitconfirmtishi");
                   } else {
-                    this.$message.success("提交失败");
+                    this.$message.error("提交失败");
                   }
                 } else {
-                  this.$message.success("提交失败");
+                  this.$message.error("提交失败");
                 }
               },
               error => {
@@ -494,7 +533,7 @@ export default {
               }
             );
         } else {
-          console.log("error submit!!");
+          this.$message.error("输入有误，请检查输入！");
           return false;
         }
       });
