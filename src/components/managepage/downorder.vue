@@ -266,24 +266,19 @@
           >
             <el-row>
               <el-col :span="6">
-                <el-select
-                  v-model="domain.PassengerName"
-                  filterable
-                  :filter-method="staffquerySearch"
-                  placeholder="选择出行人"
-                >
+                <el-select v-model="domain.PassengerName" filterable placeholder="选择出行人">
                   <el-option
-                    v-for="item in selectstaffs"
+                    v-for="item in staffoptions"
                     :key="item.StaffId"
                     :label="item.StaffName"
                     :value="item.StaffName"
                   ></el-option>
                 </el-select>
               </el-col>
-              <!-- <el-col :span="3" :offset="1">证件号</el-col>
+              <el-col :span="3" :offset="1">证件号</el-col>
               <el-col :span="8">
-                <el-input v-model="domain.name.StaffCardNo"></el-input>
-              </el-col>-->
+                <el-input v-model="domain.PassengerName"></el-input>
+              </el-col>
               <el-col :span="4" :offset="1">
                 <el-button @click.prevent="removeDomain(domain)">删除</el-button>
               </el-col>
@@ -395,8 +390,7 @@ export default {
       },
       airshow: true,
       hotelshow: true,
-      destinationshow: false,
-      selectstaffs: []
+      destinationshow: false
     };
   },
   methods: {
@@ -469,10 +463,7 @@ export default {
       }
     },
     onSubmit(formName) {
-      if (
-        this.form.Passenger.length <
-        this.form.Apartment.length
-      ) {
+      if (this.form.Passenger.length < this.form.Apartment.length) {
         this.$message.error("出行人数必须大于等于房间数！");
         return false;
       }
@@ -584,7 +575,7 @@ export default {
             }
           },
           error => {
-            this.$message("请求失败！");
+            this.$message.error("请求失败！");
             console.log(error);
           }
         );
@@ -615,21 +606,10 @@ export default {
             }
           },
           error => {
-            this.$message("请求失败！");
+            this.$message.error("请求失败！");
             console.log(error);
           }
         );
-    },
-    //出行人选择
-    staffquerySearch(query) {
-      debugger;
-      if (query !== "") {
-        this.selectstaffs = this.staffoptions.filter(item => {
-          return item.StaffName.toLowerCase().indexOf(query.toLowerCase()) > -1;
-        });
-      } else {
-        this.selectstffs = this.staffoptions;
-      }
     }
   },
   mounted() {
