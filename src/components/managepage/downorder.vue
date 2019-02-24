@@ -266,18 +266,25 @@
           >
             <el-row>
               <el-col :span="6">
-                <el-select v-model="domain.PassengerName" filterable placeholder="选择出行人">
+                <el-autocomplete
+                  class="inline-input"
+                  v-model="domain.PassengerName"
+                  :fetch-suggestions="querySearch"
+                  placeholder="选择出行人"
+                  @select="((item)=>{handleSelect(item, domain)})"
+                ></el-autocomplete>
+                <!-- <el-select v-model="domain.PassengerName" filterable placeholder="选择出行人">
                   <el-option
                     v-for="item in staffoptions"
                     :key="item.StaffId"
                     :label="item.StaffName"
                     :value="item.StaffName"
                   ></el-option>
-                </el-select>
+                </el-select>-->
               </el-col>
               <el-col :span="3" :offset="1">证件号</el-col>
               <el-col :span="8">
-                <el-input v-model="domain.PassengerName"></el-input>
+                <el-input v-model="domain.CardNo"></el-input>
               </el-col>
               <el-col :span="4" :offset="1">
                 <el-button @click.prevent="removeDomain(domain)">删除</el-button>
@@ -378,7 +385,8 @@ export default {
         hotelothers: "",
         Passenger: [
           {
-            PassengerName: ""
+            PassengerName: "",
+            PassengerCardNo:""
           }
         ],
         Apartment: [
@@ -390,7 +398,8 @@ export default {
       },
       airshow: true,
       hotelshow: true,
-      destinationshow: false
+      destinationshow: false,
+      restaurants: []
     };
   },
   methods: {
@@ -467,8 +476,17 @@ export default {
         this.$message.error("出行人数必须大于等于房间数！");
         return false;
       }
+
+      if (this.form.bookingtype == 0) {
+        this.form.hotelcheckindate = null;
+        this.form.hotelcheckoutdate = null;
+        this.form.hoteltype = null;
+        this.form.destination = null;
+        this.form.hotellocation = null;
+        this.form.hotelothers = null;
+      }
+
       this.$refs[formName].validate(valid => {
-        debugger;
         if (valid) {
           debugger;
           this.$http
@@ -583,7 +601,7 @@ export default {
     loadstafflist() {
       this.$http
         .post(
-          "/api/Enterprise/GetStaffList",
+          "/api/Enterprise/GetStaffListChangeValue",
           Service.Encrypt.DataEncryption({
             EnterpriseId: this.user.EnterpriseId
           })
@@ -596,8 +614,7 @@ export default {
               response.data.Data != undefined
             ) {
               if (response.data.Status == 100) {
-                this.staffoptions = response.data.Data;
-                this.selectstaffs = response.data.Data;
+                this.restaurants = response.data.Data;
               } else {
                 this.staffoptions = [];
               }
@@ -610,6 +627,26 @@ export default {
             console.log(error);
           }
         );
+    },
+    querySearch(queryString, cb) {
+      
+      var restaurants = this.restaurants;
+      var results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
+    createFilter(queryString) {
+      return restaurant => {
+        return (
+          restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) ===
+          0
+        );
+      };
+    },
+    handleSelect(item,domain) {
+       domain.CardNo =item.PassengerCardNo;
     }
   },
   mounted() {

@@ -11,7 +11,7 @@
     <div class="container">
       <div class="handle-box">
         <!-- <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
-        <el-button type="primary" icon="search" @click="search">搜索</el-button> -->
+        <el-button type="primary" icon="search" @click="search">搜索</el-button>-->
       </div>
       <el-table :data="tableData" border class="table" ref="multipleTable">
         <el-table-column prop="OrderId" label="订单号"></el-table-column>
@@ -66,7 +66,7 @@
 
         <p style="height:10px;"></p>
         <!--机票信息-->
-        <el-card class="box-card" style="width:100%">
+        <el-card class="box-card" style="width:100%" v-if="airCard">
           <div slot="header" class="clearfix">
             <span>机票信息</span>
             <el-button
@@ -109,7 +109,7 @@
         <p style="height:5px;"></p>
 
         <!--火车票信息-->
-        <el-card class="box-card" style="width:100%">
+        <el-card class="box-card" style="width:100%" v-if="trainCard">
           <div slot="header" class="clearfix">
             <span>火车票信息</span>
             <el-button
@@ -151,7 +151,7 @@
         <p style="height:5px;"></p>
 
         <!--酒店信息-->
-        <el-card class="box-card" style="width:100%">
+        <el-card class="box-card" style="width:100%" v-if="hotelCard">
           <div slot="header" class="clearfix">
             <span>酒店信息</span>
             <span style="font-size: 12px;padding-left:100px">入住时间：{{this.form.hotelCheckinDate}}</span>
@@ -304,7 +304,7 @@ export default {
         status: "",
         totalPrice: ""
       },
-      tableData:[],
+      tableData: [],
       tableDataairtop: [],
       showTicketPrice: 0,
       showFuelPrice: 0,
@@ -319,7 +319,11 @@ export default {
       tableDataRooms: [],
       hotelTotalPrice: 0,
       hotelcurrentRow: null,
-      tableDataPass: []
+      tableDataPass: [],
+
+      airCard: false,
+      trainCard: false,
+      hotelCard: false
     };
   },
   methods: {
@@ -336,7 +340,7 @@ export default {
           msg = "机票/火车票&&酒店";
           break;
         default:
-          msg = "未知";
+          msg = "";
           break;
       }
       return msg;
@@ -351,7 +355,7 @@ export default {
           msg = "火车";
           break;
         default:
-          msg = "未知";
+          msg = "";
           break;
       }
       return msg;
@@ -366,7 +370,7 @@ export default {
           msg = "往返";
           break;
         default:
-          msg = "未知";
+          msg = "";
           break;
       }
       return msg;
@@ -381,7 +385,7 @@ export default {
           msg = "到店支付";
           break;
         default:
-          msg = "未知";
+          msg = "";
           break;
       }
       return msg;
@@ -399,7 +403,7 @@ export default {
           msg = "机场/车站";
           break;
         default:
-          msg = "未知";
+          msg = "";
           break;
       }
       return msg;
@@ -417,7 +421,7 @@ export default {
           msg = "头等舱";
           break;
         default:
-          msg = "未知";
+          msg = "";
           break;
       }
       return msg;
@@ -447,7 +451,7 @@ export default {
           msg = "商务座";
           break;
         default:
-          msg = "未知";
+          msg = "";
           break;
       }
       return msg;
@@ -468,7 +472,7 @@ export default {
           msg = "豪华套件";
           break;
         default:
-          msg = "未知";
+          msg = "";
           break;
       }
       return msg;
@@ -528,6 +532,26 @@ export default {
       this.showFuelPrice = 0;
       this.showtrainprice = 0;
       this.hotelTotalPrice = 0;
+      
+      
+
+      //判断显示哪些模块
+      if (order.BookingType == 0) {
+        if (order.TravelWay == 0) {
+          this.airCard = true;
+        } else {
+          this.trainCard = true;
+        }
+      } else if (order.BookingType == 1) {
+        this.hotelCard = true;
+      } else {
+        if (order.TravelWay == 0) {
+          this.airCard = true;
+        } else {
+          this.trainCard = true;
+        }
+        this.hotelCard = true;
+      }
 
       this.getGetOrderApartmentList();
       this.getOrderPassengerlist();
@@ -771,7 +795,6 @@ export default {
     },
     //确认行程订单
     submitOrderTravel() {
-      
       var selectAirTicketId = 0;
       var selectTrainTicketId = 0;
       var selectHotelId = 0;
@@ -923,9 +946,9 @@ export default {
     this.onQueryClick(1);
   },
   activated() {
-   this.onQueryClick(1);
- },
- computed: {
+    this.onQueryClick(1);
+  },
+  computed: {
     totalprince: function() {
       var total = 0;
       total =
