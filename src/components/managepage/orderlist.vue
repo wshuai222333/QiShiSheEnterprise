@@ -25,7 +25,7 @@
         <el-table-column prop="HotelCheckoutDate" label="离店日期"></el-table-column>
         <el-table-column prop="HotelType" label="酒店类型" :formatter="formatterhoteltype"></el-table-column>
         <el-table-column prop="HotelLocation" label="期待位置" :formatter="formatterhotellocation"></el-table-column>
-        <el-table-column prop="Status" label="订单状态" width="120">
+        <el-table-column prop="Status" label="订单状态" width="50">
           <template slot-scope="scope">
             <el-tag v-if="scope.row.Status==0">行程生成中</el-tag>
             <el-tag type="danger" v-if="scope.row.Status==1">待用户确认</el-tag>
