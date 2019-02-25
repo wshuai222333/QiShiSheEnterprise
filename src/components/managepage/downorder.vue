@@ -284,7 +284,7 @@
               </el-col>
               <el-col :span="3" :offset="1">证件号</el-col>
               <el-col :span="8">
-                <el-input v-model="domain.CardNo"></el-input>
+                <el-input v-model="domain.PassengerCardNo"></el-input>
               </el-col>
               <el-col :span="4" :offset="1">
                 <el-button @click.prevent="removeDomain(domain)">删除</el-button>
@@ -472,6 +472,8 @@ export default {
       }
     },
     onSubmit(formName) {
+
+      debugger;
       if (this.form.Passenger.length < this.form.Apartment.length) {
         this.$message.error("出行人数必须大于等于房间数！");
         return false;
@@ -646,7 +648,8 @@ export default {
       };
     },
     handleSelect(item,domain) {
-       domain.CardNo =item.PassengerCardNo;
+       debugger;
+       domain.PassengerCardNo =item.cardno;
     }
   },
   mounted() {
