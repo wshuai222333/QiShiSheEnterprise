@@ -83,6 +83,7 @@
                     v-model="form.departdate"
                     style="width: 100%;"
                     @change="changedepartdate"
+                    value-format="yyyy-MM-dd"
                   ></el-date-picker>
                 </el-col>
                 <el-col class="line" :span="2">
@@ -109,6 +110,7 @@
                       v-model="form.arrivedate"
                       style="width: 100%;"
                       @change="changearrivedate"
+                      value-format="yyyy-MM-dd"
                     ></el-date-picker>
                   </el-form-item>
                 </el-col>
@@ -157,6 +159,7 @@
                   placeholder="入住日期"
                   v-model="form.hotelcheckindate"
                   style="width: 100%;"
+                  value-format="yyyy-MM-dd"
                 ></el-date-picker>
               </el-col>
               <el-col class="line" :span="2">-</el-col>
@@ -167,6 +170,7 @@
                     placeholder="离店日期"
                     v-model="form.hotelcheckoutdate"
                     style="width: 100%;"
+                    value-format="yyyy-MM-dd"
                   ></el-date-picker>
                 </el-form-item>
               </el-col>
