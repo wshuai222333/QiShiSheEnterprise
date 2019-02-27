@@ -19,7 +19,7 @@
           </el-input>
         </el-form-item>
         <div class="login-btn">
-          <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
+          <el-button type="primary" @click="submitForm('ruleForm')" :loading="isLoging">登录</el-button>
         </div>
         <p class="login-tips"></p>
       </el-form>
@@ -35,7 +35,8 @@ export default {
     return {
       ruleForm: {
         username: "",
-        password: ""
+        password: "",
+        isLoging: false
       },
       rules: {
         username: [
@@ -57,6 +58,8 @@ export default {
       });
     },
     handleLogin() {
+      this.isLoging = true;
+      debugger;
       this.$http
         .post(
           "/api/Enterprise/StaffLogin",
@@ -76,7 +79,10 @@ export default {
                 response.data.Data.UserPwd = null;
 
                 this.$message.success("登录成功");
-                localStorage.setItem("ms_username", JSON.stringify(response.data.Data));
+                sessionStorage.setItem(
+                  "ms_username",
+                  JSON.stringify(response.data.Data)
+                );
                 // Service.Util.SetLocalStorage(Service.Enum.CGT_ALI_USER, "");
                 // Service.Util.SetLocalStorage(
                 //   Service.Enum.CGT_ALI_USER,

@@ -5,6 +5,7 @@ import Interceptor from "./interceptor.service";
 import Util from "./util.service";
 import Enum from "./enum.service";
 // import Convert from "./convert.service"
+import Session from "./session.service"
 
 export default {
     // Auth,
@@ -14,4 +15,5 @@ export default {
     Util,
     Enum,
     // Convert
+    Session
 }

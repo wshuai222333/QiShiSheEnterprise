@@ -55,7 +55,7 @@
         },
         computed:{
             username(){
-                let user = JSON.parse(localStorage.getItem("ms_username"));
+                let user = JSON.parse(sessionStorage.getItem("ms_username"));
                 return user.UserName ? user.UserName : this.name;
             }
         },
@@ -63,7 +63,7 @@
             // 用户名下拉菜单选择事件
             handleCommand(command) {
                 if(command == 'loginout'){
-                    localStorage.removeItem('ms_username')
+                    sessionStorage.removeItem('ms_username')
                     this.$router.push('/login');
                 }
             },

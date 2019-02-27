@@ -96,9 +96,10 @@
         name: 'dashboard',
         data() {
             return {
-                staffname: JSON.parse(localStorage.getItem('ms_username')).StaffName,
-                enterprisename:JSON.parse(localStorage.getItem('ms_username')).EnterpriseName,
-                integral:JSON.parse(localStorage.getItem('ms_username')).Integral,
+                renderChart:"",
+                staffname: JSON.parse(sessionStorage.getItem('ms_username')).StaffName,
+                enterprisename:JSON.parse(sessionStorage.getItem('ms_username')).EnterpriseName,
+                integral:JSON.parse(sessionStorage.getItem('ms_username')).Integral,
                     todoList: [{
                         title: '机票：2019-01-23 9:00 北京-上海 T3航站楼',
                         status: false,

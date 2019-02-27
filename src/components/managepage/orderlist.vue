@@ -942,7 +942,7 @@ export default {
     }
   },
   mounted() {
-    this.user = JSON.parse(localStorage.getItem("ms_username"));
+    this.user = JSON.parse(sessionStorage.getItem("ms_username"));
     this.onQueryClick(1);
   },
   activated() {
